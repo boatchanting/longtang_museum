@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>帖子详情</title>
+  <style id="theme-style">
+    :root {
+      --grad-start: #f6e7cd;
+      --grad-end:   #dfc295;
+      --primary:    #b07a43;
+      --text:       #4d3a13;
+      --card:       #fff8ef;
+      --card-dark:  #4d402d;
+    }
+  </style>
+  <style>
+    @font-face { font-family: "Segoe UI"; src: local("Segoe UI"); }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      font-family: "Segoe UI","PingFang SC","Noto Sans",sans-serif;
+      background: linear-gradient(to top, var(--grad-end), var(--grad-start));
+      color: var(--text);
+    }
+    .card {
+      background: var(--card);
+      border-radius: 24px;
+      box-shadow: 0 3px 10px rgba(0,0,0,.08);
+    }
+    header {
+      padding: 1rem;
+      text-align: center;
+      background: var(--card);
+      border-radius: 0 0 24px 24px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.06);
+    }
+    header h1 {
+      font-size: 1.3rem;
+      font-weight: 700;
+    }
+    main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1rem;
+    }
+    #carousel {
+      position: relative;
+      width: 100%;
+      height: 60vw;
+      max-height: 320px;
+      border-radius: 24px;
+      overflow: hidden;
+      margin-bottom: 1rem;
+    }
+    #carousel img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity .6s;
+    }
+    #carousel img.active {
+      opacity: 1;
+    }
+    h2 {
+      margin: 0.6rem 0 0.3rem;
+      font-size: 1.1rem;
+    }
+    .post-info {
+      font-size: .85rem;
+      color: #777;
+      margin: 0.5rem 0 1rem;
+    }
+    p {
+      font-size: .95rem;
+      line-height: 1.5;
+    }
+    .action-bar {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: .6rem .8rem;
+      background: var(--card);
+      box-shadow: 0 -2px 6px rgba(0,0,0,.05);
+    }
+    .action-bar span {
+      font-size: .9rem;
+      cursor: pointer;
+      user-select: none;
+      text-align: center;
+      flex: 1;
+    }
+    .liked {
+      color: #e63946;
+    }
+    .favorite-btn.active {
+      color: gold;
+    }
+    #comments {
+      display: none;
+      position: fixed;
+      bottom: 4.2rem; /* 与底部导航栏高度一致 */
+      left: 0;
+      right: 0;
+      max-height: 60vh;
+      background: var(--card);
+      border-radius: 24px 24px 0 0;
+      overflow-y: auto;
+      padding: 1rem;
+      box-shadow: 0 -4px 12px rgba(0,0,0,.1);
+      z-index: 1000;
+    }
+    #comments h3 {
+      margin-bottom: .5rem;
+    }
+    #comments textarea {
+      width: 100%;
+      padding: .5rem;
+      margin-top: 1rem;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      resize: vertical;
+      min-height: 40px;
+      font-size: .9rem;
+    }
+    .comment-item {
+      margin: .5rem 0;
+      padding: .5rem;
+      background: #f0f0f0;
+      border-radius: 8px;
+    }
+    .bottom-nav {
+      position: fixed;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      height: 4.2rem;
+      background: var(--card);
+      border-radius: 24px 24px 0 0;
+      box-shadow: 0 -3px 10px rgba(0,0,0,.08);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 999;
+    }
+    .bottom-nav a {
+      flex: 1;
+      text-decoration: none;
+      color: var(--primary);
+      font-size: .8rem;
+      text-align: center;
+    }
+    .bottom-nav a.active {
+      color: var(--text);
+    }
+    .bottom-nav .icon {
+      width: 1.6rem;
+      height: 1.6rem;
+      margin: 0 auto .1rem;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="card">
+    <h1>帖子详情</h1>
+  </header>
+
+  <main>
+    <div id="carousel" class="card">
+      <img src="https://picsum.photos/400/300?random=21 " class="active" alt="">
+      <img src="https://picsum.photos/400/300?random=22 " alt="">
+      <img src="https://picsum.photos/400/300?random=23 " alt="">
+    </div>
+
+    <h2>这里是帖子标题</h2>
+    <div class="post-info">
+      <p>作者：张三</p>
+      <p>发布时间：2023-10-05 15:30</p>
+      <p>浏览次数：<span id="view-count">123</span>次</p>
+    </div>
+    <p>这里是帖子正文描述……这段文字展示了动态详情的内容，支持多行展示和自动换行。</p>
+  </main>
+
+  <div class="action-bar">
+    <span id="like-btn">❤ <span id="like-count">45</span></span>
+    <span id="favorite-btn" class="favorite-btn">⭐ <span id="favorite-count">10</span></span>
+    <span onclick="showComments()">💬 <span id="comment-count">12</span></span>
+    <span onclick="sharePost()">🔗 分享</span>
+  </div>
+
+  <div id="comments">
+    <h3>评论</h3>
+    <div id="comments-list">
+      <div class="comment-item">用户A：很棒的分享！</div>
+      <div class="comment-item">用户B：👍👍👍</div>
+    </div>
+    <textarea id="comment-input" placeholder="写下你的评论..."></textarea>
+    <div style="display: flex; justify-content: flex-end; margin-top: 1rem;">
+      <button onclick="submitComment()" style="padding:.5rem 1rem;border:none;border-radius:8px;background:var(--primary);color:#fff;margin-right: 1rem;">
+        提交
+      </button>
+      <button onclick="hideComments()" style="padding:.5rem 1rem;border:none;border-radius:8px;background:#ccc;color:#fff;">
+        关闭
+      </button>
+    </div>
+  </div>
+
+  <footer class="bottom-nav">
+    <a href="../index.html">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+      </svg>
+      <div>主页</div>
+    </a>
+    <a href="#" onclick="/* TODO: 馆藏 */">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
+      </svg>
+      <div>馆藏</div>
+    </a>
+    <a href="community.html" class="active">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+      </svg>
+      <div>社区</div>
+    </a>
+    <a href="#" onclick="/* TODO: 个人中心 */">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+      </svg>
+      <div>我的</div>
+    </a>
+  </footer>
+
+  <script>
+    // 轮播逻辑
+    (function(){
+      const imgs = [...document.querySelectorAll('#carousel img')];
+      let idx = 0;
+      setInterval(() => {
+        imgs[idx].classList.remove('active');
+        idx = (idx + 1) % imgs.length;
+        imgs[idx].classList.add('active');
+      }, 3000);
+    })();
+
+    // 初始化页面数据
+    window.addEventListener('DOMContentLoaded', () => {
+      // 初始化点赞状态
+      const isLiked = localStorage.getItem('postLiked') === 'true';
+      const likeBtn = document.getElementById('like-btn');
+      likeBtn.classList.toggle('liked', isLiked);
+      
+      // 初始化收藏状态
+      const isFavorited = localStorage.getItem('postFavorited') === 'true';
+      const favoriteBtn = document.getElementById('favorite-btn');
+      favoriteBtn.classList.toggle('active', isFavorited);
+      
+      // 恢复计数器
+      document.getElementById('like-count').textContent = localStorage.getItem('likeCount') || 45;
+      document.getElementById('favorite-count').textContent = localStorage.getItem('favoriteCount') || 10;
+      document.getElementById('comment-count').textContent = localStorage.getItem('commentCount') || 12;
+      
+      // 增加浏览次数
+      const viewCount = document.getElementById('view-count');
+      let views = +viewCount.textContent + 1;
+      viewCount.textContent = views;
+    });
+
+    // 点赞功能
+    function toggleLike(){
+      const btn = document.getElementById('like-btn');
+      const cnt = document.getElementById('like-count');
+      let n = +cnt.textContent;
+      const isActive = btn.classList.toggle('liked');
+      n = isActive ? n + 1 : n - 1;
+      cnt.textContent = n;
+      localStorage.setItem('postLiked', isActive);
+      localStorage.setItem('likeCount', n);
+    }
+    document.getElementById('like-btn').onclick = toggleLike;
+    document.getElementById('carousel').ondblclick = toggleLike;
+
+    // 收藏功能
+    function toggleFavorite() {
+      const btn = document.getElementById('favorite-btn');
+      const cnt = document.getElementById('favorite-count');
+      let n = +cnt.textContent;
+      const isActive = btn.classList.toggle('active');
+      n = isActive ? n + 1 : n - 1;
+      cnt.textContent = n;
+      localStorage.setItem('postFavorited', isActive);
+      localStorage.setItem('favoriteCount', n);
+    }
+    document.getElementById('favorite-btn').onclick = toggleFavorite;
+
+    // 分享功能
+    function sharePost() {
+      const postUrl = window.location.href;
+      navigator.clipboard.writeText(postUrl).then(() => {
+        alert('链接已复制到剪贴板！');
+      }).catch(() => {
+        prompt('请手动复制链接:', postUrl);
+      });
+    }
+
+    // 评论面板
+    function showComments() { 
+      document.getElementById('comments').style.display = 'block';
+      document.getElementById('comment-input').focus(); // 自动聚焦输入框
+    }
+    function hideComments() { 
+      document.getElementById('comments').style.display = 'none'; 
+    }
+
+    // 提交评论
+    function submitComment() {
+      const input = document.getElementById('comment-input');
+      const text = input.value.trim();
+      if (text === '') return;
+      
+      const newComment = document.createElement('div');
+      newComment.className = 'comment-item';
+      newComment.textContent = '游客：' + text;
+      
+      document.getElementById('comments-list').appendChild(newComment);
+      input.value = '';
+      
+      // 更新评论计数
+      const commentCount = document.getElementById('comment-count');
+      let count = +commentCount.textContent + 1;
+      commentCount.textContent = count;
+      localStorage.setItem('commentCount', count);
+      
+      // 滚动到底部显示最新评论
+      const commentsList = document.getElementById('comments-list');
+      commentsList.scrollTop = commentsList.scrollHeight;
+    }
+
+    // 主题切换逻辑
+    (function(){
+      const styleEl = document.getElementById('theme-style');
+      const lightVars = `
+        --grad-start:#f6e7cd;
+        --grad-end:#dfc295;
+        --primary:#b07a43;
+        --text:#4d3a13;
+        --card:#fff8ef;
+      `;
+      const darkVars = `
+        --grad-start:#3f3425;
+        --grad-end:#241e14;
+        --primary:#e0b67a;
+        --text:#f5f0ea;
+        --card:#4d402d;
+      `;
+      const mq = matchMedia('(prefers-color-scheme:dark)');
+      function apply(mode){
+        styleEl.textContent = ':root{' +
+          (mode === 'dark' ? darkVars :
+           mode === 'light' ? lightVars :
+           (mq.matches ? darkVars : lightVars)
+          ) + '}';
+      }
+      const saved = localStorage.getItem('museumTheme') || 'auto';
+      apply(saved);
+      mq.addEventListener('change', () => {
+        if((localStorage.getItem('museumTheme')||'auto') === 'auto'){
+          apply('auto');
+        }
+      });
+      window.setTheme = function(mode){
+        localStorage.setItem('museumTheme', mode);
+        apply(mode);
+      };
+    })();
+  </script>
+</body>
+</html>
