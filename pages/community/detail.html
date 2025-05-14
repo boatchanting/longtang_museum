@@ -16,7 +16,9 @@
       flex: 1;
       overflow-y: auto;
       padding: 1rem;
+      padding-bottom: calc(4.2rem + 1.5rem);   /* 约 5.7 rem，可按需调整 *//* === 让页面内容底部留白，避免被固定导航覆盖 === */
     }
+    
     #carousel {
       position: relative;
       width: 100%;
@@ -102,6 +104,67 @@
       color: gold;
     }
 
+    /* ===== 帖子标题 ===== */
+h2 {
+  margin: .8rem 0 .6rem;
+  font-size: 1.4rem;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--text);
+  /* 背景渐变高亮 */
+  background: linear-gradient(90deg,var(--primary) 0%,var(--grad-end) 100%);
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+  /* ===== Meta 信息块 ===== */
+  .post-card{
+  padding: 1.2rem 1.4rem;      /* 内边距 */
+  margin-top: 1rem;            /* 与轮播/其他组件留间距 */
+  box-shadow: 0 4px 12px rgba(0,0,0,.05);
+  /* 继承 .card 的背景色和圆角 */
+  }
+  .post-info{
+    display:flex;
+    flex-wrap:wrap;             /* 小屏换行 */
+    column-gap:1.2rem;
+    row-gap:.2rem;
+    margin-bottom:1rem;
+    font-size:.8rem;
+    color:var(--text);
+  }
+  .post-info p{
+    margin:0;
+    position:relative;
+    padding-left:1.1rem;        /* 给图标留位置 */
+  }
+  .post-info p::before{         /* 小图标圆点 */
+    content:"";
+    position:absolute;
+    left:0;
+    top:50%;
+    width:.45rem;
+    height:.45rem;
+    border-radius:50%;
+    background:var(--primary);
+    transform:translateY(-50%);
+  }
+
+  /* ===== 正文段落 ===== */
+  main > p{
+    margin:0 0 1.5rem;
+    font-size:.95rem;
+    line-height:1.65;
+    letter-spacing:.02em;
+    color:var(--text);
+    text-indent:1em;
+  }
+
+  /* 暗黑模式兼容 */
+  @media (prefers-color-scheme: dark){
+    .post-info p::before{background:var(--grad-end);}
+  }
+
     /* 底部导航栏 */
     .bottom-nav {
       position: fixed;
@@ -135,73 +198,39 @@
     }
 
     /* ——— 评论区 ——— */
-    .comments-section {
-      background: var(--card);
-      border-radius: 24px;
-      padding: 1rem;
-      margin-top: 1.5rem;
-      box-shadow: 0 2px 6px rgba(0,0,0,.05);
+    .comments{background:var(--card);border-radius:24px;padding:1rem;margin-top:1.2rem}
+    .comments h3{margin:0 0 .8rem;font-size:1rem;font-weight:600}
+    .comment-item{display:flex;gap:.75rem;margin-bottom:1rem}
+    .comment-item:last-child{margin-bottom:0}
+    .comment-avatar{flex-shrink:0;width:2.4rem;height:2.4rem;border-radius:50%;object-fit:cover}
+    .comment-body{flex:1}
+    .comment-meta{display:flex;align-items:center;gap:.4rem;font-size:.8rem;color:#888;margin-bottom:.2rem}
+    .comment-nick{font-weight:600;color:var(--text)}
+    .comment-text{font-size:.9rem;line-height:1.45;color:var(--text)}
+
+    /* ---------- 回复（子评论）样式 ---------- */
+    .reply-list{
+      margin-top:.55rem;
+      padding-left:2.6rem;               /* 整体缩进 */
+      display:flex;
+      flex-direction:column;
+      gap:.75rem;
+      border-left:2px solid rgba(0,0,0,.05);   /* 视觉层级分隔 */
     }
-    .comments-section h3 {
-      margin: 0 0 0.8rem;
-      font-size: 1rem;
+    .reply-item{display:flex;gap:.6rem}
+    .reply-avatar{
+      flex-shrink:0;
+      width:1.9rem;height:1.9rem;
+      border-radius:50%;object-fit:cover
     }
-    .comment {
-      display: flex;
-      gap: 0.6rem;
-      margin-bottom: 0.9rem;
+    .reply-body{flex:1}
+    .reply-meta{
+      font-size:.75rem;color:#888;margin-bottom:.15rem;
+      display:flex;align-items:center;gap:.35rem
     }
-    .comment .avatar {
-      width: 2.6rem;
-      height: 2.6rem;
-      flex-shrink: 0;
-      border-radius: 50%;
-      object-fit: cover;
-    }
-    .comment .body {
-      flex: 1;
-    }
-    .comment .name {
-      font-weight: 600;
-      font-size: 0.9rem;
-      color: var(--text);
-    }
-    .comment .time {
-      font-size: 0.75rem;
-      color: #999;
-      margin-left: .4rem;
-    }
-    .comment .text {
-      font-size: 0.9rem;
-      line-height: 1.4;
-      margin-top: 0.25rem;
-    }
-    .add-comment {
-      display: flex;
-      gap: 0.6rem;
-      align-items: flex-start;
-      margin-top: 1rem;
-    }
-    .add-comment textarea {
-      flex: 1;
-      min-height: 3.2rem;
-      border: 1px solid #ddd;
-      border-radius: 12px;
-      padding: 0.6rem;
-      font-size: 0.9rem;
-      resize: vertical;
-      background: var(--card);
-      color: var(--text);
-    }
-    .add-comment button {
-      padding: 0.6rem 1rem;
-      border: none;
-      border-radius: 12px;
-      background: var(--primary);
-      color: #fff;
-      font-size: 0.9rem;
-      cursor: pointer;
-    }
+    .reply-nick{font-weight:600;color:var(--text)}
+    .reply-text{font-size:.85rem;line-height:1.45;color:var(--text)}
+
   </style>
 </head>
 <body>
@@ -218,32 +247,88 @@
       <div class="carousel-counter"></div>
     </div>
 
-    <h2>这里是帖子标题</h2>
-    <div class="post-info">
-      <p>作者：张三</p>
-      <p>发布时间：2023-10-05 15:30</p>
-      <p>浏览次数：<span id="view-count">124</span>次</p>
-    </div>
-    <p>这里是帖子正文描述……这段文字展示了动态详情的内容，支持多行展示和自动换行。</p>
+    <section class="post-card card">
+      <h2>这里是帖子标题</h2>
 
-    <!-- 评论区 -->
-    <section id="comments" class="comments-section card">
-      <h3>评论 (<span id="comments-total">0</span>)</h3>
-      <div id="comment-list"></div>
-
-      <div class="add-comment">
-        <textarea id="comment-input" placeholder="写下你的评论..."></textarea>
-        <button id="comment-submit">发送</button>
+      <div class="post-info">
+        <p>作者：张三</p>
+        <p>发布时间：2023‑10‑05 15:30</p>
+        <p>浏览次数：<span id="view-count">124</span>次</p>
       </div>
-    </section>
-  </main>
 
-  <div class="action-bar">
+      <p>
+        这里是帖子正文描述……这段文字展示了动态详情的内容，支持多行展示和自动换行。
+      </p>
+    </section>
+
+    <!-- *** 评论区 *** -->
+    <section class="comments">
+      <!-- ===== 评论 1 ===== -->
+      <div class="comment-item">
+        <img class="comment-avatar" src="https://picsum.photos/80/80?random=31" alt="avatar">
+        <div class="comment-body">
+          <div class="comment-meta">
+            <span class="comment-nick">小可爱</span><span>·</span><span>2 小时前</span>
+          </div>
+          <div class="comment-text">图太治愈啦！想知道拍摄地点～😍</div>
+
+          <!-- ★ 回复列表 -->
+          <div class="reply-list">
+            <!-- 回复 1‑1 -->
+            <div class="reply-item">
+              <img class="reply-avatar" src="https://picsum.photos/60/60?random=41" alt="avatar">
+              <div class="reply-body">
+                <div class="reply-meta">
+                  <span class="reply-nick">楼主</span><span>·</span><span>1 小时前</span>
+                </div>
+                <div class="reply-text">在丽江古城旁的小众视角哈～</div>
+              </div>
+            </div>
+
+            <!-- 回复 1‑2 -->
+            <div class="reply-item">
+              <img class="reply-avatar" src="https://picsum.photos/60/60?random=42" alt="avatar">
+              <div class="reply-body">
+                <div class="reply-meta">
+                  <span class="reply-nick">旅行者</span><span>·</span><span>刚刚</span>
+                </div>
+                <div class="reply-text">记下了！谢谢分享 ✈️</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== 评论 2 ===== -->
+      <div class="comment-item">
+        <img class="comment-avatar" src="https://picsum.photos/80/80?random=32" alt="avatar">
+        <div class="comment-body">
+          <div class="comment-meta">
+            <span class="comment-nick">咖啡不加糖</span><span>·</span><span>昨天</span>
+          </div>
+          <div class="comment-text">颜色搭配好好看，收藏学习一下配色思路！</div>
+        </div>
+      </div>
+
+      <!-- ===== 评论 3 ===== -->
+      <div class="comment-item">
+        <img class="comment-avatar" src="https://picsum.photos/80/80?random=33" alt="avatar">
+        <div class="comment-body">
+          <div class="comment-meta">
+            <span class="comment-nick">旅行者</span><span>·</span><span>2023‑10‑05</span>
+          </div>
+          <div class="comment-text">这地方我上个月刚去过，楼主拍出了不一样的感觉👍</div>
+        </div>
+      </div>
+
+    </section>
+
+  <footer class="bottom-nav card">
     <span id="like-btn">❤ <span id="like-count">45</span></span>
     <span id="favorite-btn" class="favorite-btn">⭐ <span id="favorite-count">10</span></span>
     <span onclick="showComments()">💬 <span id="comment-count">12</span></span>
     <span onclick="sharePost()">🔗 分享</span>
-  </div>
+  </footer>
 
   <script>
     // 手动轮播逻辑
@@ -270,15 +355,11 @@
           dot.classList.toggle('active', i === idx);
         });
       }
-      function updateCounter() {
-        counter.textContent = `${idx + 1} / ${imgs.length}`;
-      }
       function switchImage(step) {
         imgs[idx].classList.remove('active');
         idx = (idx + step + imgs.length) % imgs.length;
         imgs[idx].classList.add('active');
         updateIndicator();
-        updateCounter();
       }
       carousel.addEventListener('touchstart', e => {
         touchStartX = e.touches[0].clientX;
@@ -291,71 +372,9 @@
         }
       });
       updateIndicator();
-      updateCounter();
     })();
   </script>
   <script>
-    // ——— 评论逻辑 ———
-    const defaultComments = [
-      {name: '李四', avatar: "https://picsum.photos/400/300?random=25", text: '太漂亮啦！想去同款打卡～', time: '2小时前'},
-      {name: '小明', avatar: "https://picsum.photos/400/300?random=26", text: '拍照好好看，求滤镜参数～', time: '5小时前'},
-      {name: 'Grace', avatar: "https://picsum.photos/400/300?random=27", text: '喜欢第一张图的构图✌️', time: '1天前'}
-    ];
-
-    // function loadComments() {
-    //   const saved = JSON.parse(localStorage.getItem('postComments') || 'null');
-    //   return saved && saved.length ? saved : defaultComments;
-    // }
-    // function saveComments(arr) {
-    //   localStorage.setItem('postComments', JSON.stringify(arr));
-    // }
-
-    // let comments = loadComments();
-
-    function renderComments() {
-      const list = document.getElementById('comment-list');
-      list.innerHTML = '';
-      comments.forEach(c => {
-        const item = document.createElement('div');
-        item.className = 'comment';
-        item.innerHTML = `
-          <img class="avatar" src="${c.avatar}" alt="avatar">
-          <div class="body">
-            <div>
-              <span class="name">${c.name}</span>
-              <span class="time">${c.time}</span>
-            </div>
-            <div class="text">${c.text}</div>
-          </div>
-        `;
-        list.appendChild(item);
-      });
-      document.getElementById('comments-total').textContent = comments.length;
-      document.getElementById('comment-count').textContent = comments.length;
-      localStorage.setItem('commentCount', comments.length);
-    }
-
-    function addComment() {
-      const input = document.getElementById('comment-input');
-      const text = input.value.trim();
-      if (!text) return;
-      const newComment = {
-        name: '我',
-        avatar: 'https://i.pravatar.cc/60?img=68',
-        text,
-        time: '刚刚'
-      };
-      comments.unshift(newComment);
-      input.value = '';
-      saveComments(comments);
-      renderComments();
-    }
-
-    document.getElementById('comment-submit').addEventListener('click', addComment);
-
-    function showComments() {
-      document.getElementById('comments').scrollIntoView({behavior:'smooth'});
-    }
 
     // ——— 页面初始化 ———
     window.addEventListener('DOMContentLoaded', () => {
