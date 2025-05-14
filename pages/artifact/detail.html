@@ -1,0 +1,165 @@
+<!-- pages/artifact/detail-fangyue.html -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>镇竿十字纹方钺｜馆藏文物库</title>
+
+<!-- 复用全站基础样式 -->
+<link rel="stylesheet" href="../../styles/base.css">
+<link rel="stylesheet" href="../../styles/main.css">
+<!-- 主题占位，供 theme.js 动态写入 -->
+<style id="theme-style"></style>
+<!-- ===== 文物详情页私有样式 ===== -->
+<style>
+/* Hero 图 */
+.hero {
+  position: relative;
+  width: 100%;
+  padding-bottom: 100%;         /* 1∶1 占位 */
+  overflow: hidden;
+  border-radius: 0 0 26px 26px;
+}
+.hero img{
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* 滚动区 */
+main{
+  flex:1;
+  overflow-y:auto;
+  padding:1.3rem 1.45rem 5rem;
+}
+
+/* Metadata 列表 */
+.meta-grid{
+  display:grid;
+  grid-template-columns:6.5rem 1fr;
+  row-gap:.55rem;
+  font-size:.86rem;
+  margin:1.1rem 0 .9rem;
+}
+.meta-grid dt{
+  font-weight:600;
+  color:var(--primary);
+}
+.meta-grid dd{
+  margin:0;
+  line-height:1.45;
+}
+
+/* Tag 云 */
+.tag-group{
+  display:flex;
+  flex-wrap:wrap;
+  gap:.45rem;
+  margin-bottom:1.2rem;
+}
+.tag{
+  font-size:.74rem;
+  padding:.15rem .55rem;
+  border-radius:14px;
+  background:rgba(178,123,66,.15);
+  color:var(--primary);
+}
+
+/* 简介文本 */
+.description{
+  font-size:.9rem;
+  line-height:1.6;
+  text-align:justify;
+}
+
+/* 返回按钮（左上角） */
+.back-btn{
+  position:absolute;
+  top:.9rem;left:.9rem;
+  width:2.2rem;height:2.2rem;
+  border-radius:50%;
+  background:rgba(0,0,0,.45);
+  display:flex;align-items:center;justify-content:center;
+}
+.back-btn svg{width:1.3rem;height:1.3rem;stroke:#fff;}
+</style>
+</head>
+
+<body>
+  <!-- ===== Hero 图 / 返回键 ===== -->
+  <div class="hero card">
+    <img src="https://picsum.photos/800/800?random=61" alt="镇竿十字纹方钺 正面照片">
+    <a href="../artifact.html" class="back-btn" aria-label="返回">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M15 18l-6-6 6-6"/>
+      </svg>
+    </a>
+  </div>
+
+  <!-- ===== 主内容 ===== -->
+  <main>
+    <!-- 标题 -->
+    <h2 style="font-size:1.25rem;font-weight:700;margin-bottom:.25rem;">
+      陆府界 Boundary of Lu Family’s Mansion
+    </h2>
+
+    <!-- Metadata -->
+    <dl class="meta-grid">
+      <dt>时代</dt><dd>明代</dd>
+      <dt>类别</dt><dd>地界碑</dd>
+      <dt>尺寸</dt><dd>21×9×109 cm</dd>
+      <dt>材质</dt><dd>石质</dd>
+      <dt>出土时间</dt><dd>1933-1957年</dd>
+      <dt>收藏单位</dt><dd>西王花园弄堂博物馆</dd>
+    </dl>
+
+    <!-- 简介 -->
+    <div class="description">
+      “陆府界·端古堂”是一块具有特殊历史意义的地界碑，正面刻有“陆府界”，反面刻有“端古堂”。“陆府界”中的“陆”指的是明代大学士陆深，它见证了明代名臣陆深及其家族在上海的辉煌历史，也串联起了浦东陆家嘴与浦西老城厢的文化渊源。<br>
+      <br>
+      陆深（1477-1544），字子渊，号俨山，是明代著名的文学家、书法家和收藏家。他的祖籍为浦东，因家族在浦东的显赫地位，陆家嘴地区以其名字命名。陆深在浦西老城厢拥有一座府邸，这块界碑正是其府邸的地界标识。府邸是陆深夫人梅氏的居所，梅氏不仅才情卓越，还善于治家理财，她曾捐地捐资，助力上海城墙的修建，为上海的城市建设作出了重要贡献。
+    </div>
+    <!-- Tags -->
+    <div class="tag-group">
+      <span class="tag">陆深家族</span>
+      <span class="tag">上海历史</span>
+      <span class="tag">地界碑刻</span>
+      <span class="tag">明代文物</span>
+    </div>
+
+
+  </main>
+
+  <!-- ===== 底部导航（与其他页面保持一致） ===== -->
+  <footer class="bottom-nav card">
+    <!-- <a class="nav-item" href="../../index.html">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+      </svg><div>主页</div>
+    </a> -->
+
+    <a class="nav-item active" href="../artifact.html">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
+      </svg><div>馆藏文物库</div>
+    </a>
+
+    <a class="nav-item" href="../community.html">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+      </svg><div>社区</div>
+    </a>
+
+    <a class="nav-item" href="../profile.html">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+      </svg><div>个人中心</div>
+    </a>
+  </footer>
+
+<script src="../../scripts/theme.js"></script>
+</body>
+</html>
