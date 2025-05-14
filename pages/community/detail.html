@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>帖子详情</title>
+  <!-- 引入公共样式 -->
+  <link rel="stylesheet" href="../../styles/base.css">
+  <link rel="stylesheet" href="../../styles/main.css">
+  <style>
+    header h1 {
+      font-size: 1.3rem;
+      font-weight: 700;
+    }
+    main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1rem;
+    }
+    #carousel {
+      position: relative;
+      width: 100%;
+      height: 100vw;
+      max-height: 320px;
+      border-radius: 24px;
+      overflow: hidden;
+      margin-bottom: 1rem;
+    }
+    #carousel img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity .6s;
+    }
+    .carousel-indicators {
+      position: absolute;
+      bottom: 1rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 0.5rem;
+      z-index: 2;
+    }
+    .indicator {
+      width: 0.8rem;
+      height: 0.8rem;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.5);
+      cursor: pointer;
+    }
+    .indicator.active {
+      background: rgba(255,255,255,0.9);
+    }
+    #carousel img.active {
+      opacity: 1;
+    }
+    .carousel-counter {
+      position: absolute;
+      bottom: 0.5rem;
+      left: 0;
+      right: 0;
+      text-align: center;
+      font-size: 0.9rem;
+      color: #fff;
+      z-index: 2;
+    }
+    h2 {
+      margin: 0.6rem 0 0.3rem;
+      font-size: 1.1rem;
+    }
+    .post-info {
+      font-size: .85rem;
+      color: #777;
+      margin: 0.5rem 0 1rem;
+    }
+    p {
+      font-size: .95rem;
+      line-height: 1.5;
+    }
+    .action-bar {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: .6rem .8rem;
+      background: var(--card);
+      box-shadow: 0 -2px 6px rgba(0,0,0,.05);
+    }
+    .action-bar span {
+      font-size: .9rem;
+      cursor: pointer;
+      user-select: none;
+      text-align: center;
+      flex: 1;
+    }
+    .liked {
+      color: #e63946;
+    }
+    .favorite-btn.active {
+      color: gold;
+    }
+
+    /* 底部导航栏 */
+    .bottom-nav {
+      position: fixed;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      height: 4.2rem;
+      background: var(--card);
+      border-radius: 24px 24px 0 0;
+      box-shadow: 0 -3px 10px rgba(0,0,0,.08);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 999;
+    }
+    .bottom-nav a {
+      flex: 1;
+      text-decoration: none;
+      color: var(--primary);
+      font-size: .8rem;
+      text-align: center;
+    }
+    .bottom-nav a.active {
+      color: var(--text);
+    }
+    .bottom-nav .icon {
+      width: 1.6rem;
+      height: 1.6rem;
+      margin: 0 auto .1rem;
+      display: block;
+    }
+
+    /* ——— 评论区 ——— */
+    .comments-section {
+      background: var(--card);
+      border-radius: 24px;
+      padding: 1rem;
+      margin-top: 1.5rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,.05);
+    }
+    .comments-section h3 {
+      margin: 0 0 0.8rem;
+      font-size: 1rem;
+    }
+    .comment {
+      display: flex;
+      gap: 0.6rem;
+      margin-bottom: 0.9rem;
+    }
+    .comment .avatar {
+      width: 2.6rem;
+      height: 2.6rem;
+      flex-shrink: 0;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    .comment .body {
+      flex: 1;
+    }
+    .comment .name {
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--text);
+    }
+    .comment .time {
+      font-size: 0.75rem;
+      color: #999;
+      margin-left: .4rem;
+    }
+    .comment .text {
+      font-size: 0.9rem;
+      line-height: 1.4;
+      margin-top: 0.25rem;
+    }
+    .add-comment {
+      display: flex;
+      gap: 0.6rem;
+      align-items: flex-start;
+      margin-top: 1rem;
+    }
+    .add-comment textarea {
+      flex: 1;
+      min-height: 3.2rem;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      padding: 0.6rem;
+      font-size: 0.9rem;
+      resize: vertical;
+      background: var(--card);
+      color: var(--text);
+    }
+    .add-comment button {
+      padding: 0.6rem 1rem;
+      border: none;
+      border-radius: 12px;
+      background: var(--primary);
+      color: #fff;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="card">
+    <h1>帖子详情</h1>
+  </header>
+
+  <main>
+    <div id="carousel" class="card">
+      <img src="https://picsum.photos/400/300?random=21" class="active" alt="">
+      <img src="https://picsum.photos/400/300?random=22" alt="">
+      <img src="https://picsum.photos/400/300?random=23" alt="">
+      <div class="carousel-counter"></div>
+    </div>
+
+    <h2>这里是帖子标题</h2>
+    <div class="post-info">
+      <p>作者：张三</p>
+      <p>发布时间：2023-10-05 15:30</p>
+      <p>浏览次数：<span id="view-count">124</span>次</p>
+    </div>
+    <p>这里是帖子正文描述……这段文字展示了动态详情的内容，支持多行展示和自动换行。</p>
+
+    <!-- 评论区 -->
+    <section id="comments" class="comments-section card">
+      <h3>评论 (<span id="comments-total">0</span>)</h3>
+      <div id="comment-list"></div>
+
+      <div class="add-comment">
+        <textarea id="comment-input" placeholder="写下你的评论..."></textarea>
+        <button id="comment-submit">发送</button>
+      </div>
+    </section>
+  </main>
+
+  <div class="action-bar">
+    <span id="like-btn">❤ <span id="like-count">45</span></span>
+    <span id="favorite-btn" class="favorite-btn">⭐ <span id="favorite-count">10</span></span>
+    <span onclick="showComments()">💬 <span id="comment-count">12</span></span>
+    <span onclick="sharePost()">🔗 分享</span>
+  </div>
+
+  <script>
+    // 手动轮播逻辑
+    (function(){
+      const carousel = document.getElementById('carousel');
+      const imgs = [...carousel.querySelectorAll('img:not(.carousel-counter)')];
+      const counter = carousel.querySelector('.carousel-counter');
+      const indicators = document.createElement('div');
+      let idx = 0;
+      let touchStartX = 0;
+      let touchEndX = 0;
+
+      // 创建指示器
+      indicators.className = 'carousel-indicators';
+      imgs.forEach((_, i) => {
+        const dot = document.createElement('span');
+        dot.className = `indicator ${i === 0 ? 'active' : ''}`;
+        indicators.appendChild(dot);
+      });
+      carousel.appendChild(indicators);
+
+      function updateIndicator() {
+        document.querySelectorAll('.indicator').forEach((dot, i) => {
+          dot.classList.toggle('active', i === idx);
+        });
+      }
+      function updateCounter() {
+        counter.textContent = `${idx + 1} / ${imgs.length}`;
+      }
+      function switchImage(step) {
+        imgs[idx].classList.remove('active');
+        idx = (idx + step + imgs.length) % imgs.length;
+        imgs[idx].classList.add('active');
+        updateIndicator();
+        updateCounter();
+      }
+      carousel.addEventListener('touchstart', e => {
+        touchStartX = e.touches[0].clientX;
+      });
+      carousel.addEventListener('touchend', e => {
+        touchEndX = e.changedTouches[0].clientX;
+        const diff = touchStartX - touchEndX;
+        if (Math.abs(diff) > 50) {
+          switchImage(diff > 0 ? 1 : -1);
+        }
+      });
+      updateIndicator();
+      updateCounter();
+    })();
+  </script>
+  <script>
+    // ——— 评论逻辑 ———
+    const defaultComments = [
+      {name: '李四', avatar: "https://picsum.photos/400/300?random=25", text: '太漂亮啦！想去同款打卡～', time: '2小时前'},
+      {name: '小明', avatar: "https://picsum.photos/400/300?random=26", text: '拍照好好看，求滤镜参数～', time: '5小时前'},
+      {name: 'Grace', avatar: "https://picsum.photos/400/300?random=27", text: '喜欢第一张图的构图✌️', time: '1天前'}
+    ];
+
+    // function loadComments() {
+    //   const saved = JSON.parse(localStorage.getItem('postComments') || 'null');
+    //   return saved && saved.length ? saved : defaultComments;
+    // }
+    // function saveComments(arr) {
+    //   localStorage.setItem('postComments', JSON.stringify(arr));
+    // }
+
+    // let comments = loadComments();
+
+    function renderComments() {
+      const list = document.getElementById('comment-list');
+      list.innerHTML = '';
+      comments.forEach(c => {
+        const item = document.createElement('div');
+        item.className = 'comment';
+        item.innerHTML = `
+          <img class="avatar" src="${c.avatar}" alt="avatar">
+          <div class="body">
+            <div>
+              <span class="name">${c.name}</span>
+              <span class="time">${c.time}</span>
+            </div>
+            <div class="text">${c.text}</div>
+          </div>
+        `;
+        list.appendChild(item);
+      });
+      document.getElementById('comments-total').textContent = comments.length;
+      document.getElementById('comment-count').textContent = comments.length;
+      localStorage.setItem('commentCount', comments.length);
+    }
+
+    function addComment() {
+      const input = document.getElementById('comment-input');
+      const text = input.value.trim();
+      if (!text) return;
+      const newComment = {
+        name: '我',
+        avatar: 'https://i.pravatar.cc/60?img=68',
+        text,
+        time: '刚刚'
+      };
+      comments.unshift(newComment);
+      input.value = '';
+      saveComments(comments);
+      renderComments();
+    }
+
+    document.getElementById('comment-submit').addEventListener('click', addComment);
+
+    function showComments() {
+      document.getElementById('comments').scrollIntoView({behavior:'smooth'});
+    }
+
+    // ——— 页面初始化 ———
+    window.addEventListener('DOMContentLoaded', () => {
+      // 初始化点赞状态
+      const isLiked = localStorage.getItem('postLiked') === 'true';
+      const likeBtn = document.getElementById('like-btn');
+      likeBtn.classList.toggle('liked', isLiked);
+
+      // 初始化收藏状态
+      const isFavorited = localStorage.getItem('postFavorited') === 'true';
+      const favoriteBtn = document.getElementById('favorite-btn');
+      favoriteBtn.classList.toggle('active', isFavorited);
+
+      // 恢复计数器
+      document.getElementById('like-count').textContent = localStorage.getItem('likeCount') || 45;
+      document.getElementById('favorite-count').textContent = localStorage.getItem('favoriteCount') || 10;
+      document.getElementById('comment-count').textContent = localStorage.getItem('commentCount') || comments.length;
+
+      // 增加浏览次数
+      const viewCount = document.getElementById('view-count');
+      let views = +viewCount.textContent + 1;
+      viewCount.textContent = views;
+
+      // 渲染评论
+      renderComments();
+    });
+
+    // 点赞功能
+    function toggleLike(){
+      const btn = document.getElementById('like-btn');
+      const cnt = document.getElementById('like-count');
+      let n = +cnt.textContent;
+      const isActive = btn.classList.toggle('liked');
+      n = isActive ? n + 1 : n - 1;
+      cnt.textContent = n;
+      localStorage.setItem('postLiked', isActive);
+      localStorage.setItem('likeCount', n);
+    }
+    document.getElementById('like-btn').onclick = toggleLike;
+    document.getElementById('carousel').ondblclick = toggleLike;
+
+    // 收藏功能
+    function toggleFavorite() {
+      const btn = document.getElementById('favorite-btn');
+      const cnt = document.getElementById('favorite-count');
+      let n = +cnt.textContent;
+      const isActive = btn.classList.toggle('active');
+      n = isActive ? n + 1 : n - 1;
+      cnt.textContent = n;
+      localStorage.setItem('postFavorited', isActive);
+      localStorage.setItem('favoriteCount', n);
+    }
+    document.getElementById('favorite-btn').onclick = toggleFavorite;
+
+    // 分享功能
+    function sharePost() {
+      const postUrl = window.location.href;
+      navigator.clipboard.writeText(postUrl).then(() => {
+        alert('链接已复制到剪贴板！');
+      }).catch(() => {
+        prompt('请手动复制链接:', postUrl);
+      });
+    }
+  </script>
+  <!-- 主题脚本 -->
+  <script src="../../scripts/theme.js"></script>
+</body>
+</html>

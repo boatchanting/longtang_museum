@@ -4,117 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>上海西王花园弄堂博物馆</title>
-
-<!-- ① 默认 light 配色（依旧用 CSS 变量，方便主题切换） -->
-<style id="theme-style">
-:root{
-  --grad-start:#f6e7cd;
-  --grad-end:#dfc295;
-  --primary:#b07a43;
-  --text:#4d3a13;
-  --card:#fff8ef;          /* 卡片纯色背景 */
-  --card-dark:#4d402d;     /* 暗色卡片 */
-}
-</style>
-
-<style>
-@font-face{font-family:"Segoe UI";src:local("Segoe UI");}
-*{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%}
-
-/* ===== 背景渐变（含 -webkit- 前缀） ===== */
-body{
-  font-family:"Segoe UI","PingFang SC","Noto Sans",sans-serif;
-  background:-webkit-linear-gradient(bottom,var(--grad-end),var(--grad-start));
-  background:linear-gradient(to top,var(--grad-end),var(--grad-start));
-  color:var(--text);
-  display:flex;flex-direction:column
-}
-
-/* 公共圆角卡片：纯色 + 阴影，无模糊 */
-.card{
-  background:var(--card);
-  border-radius:24px;
-  box-shadow:0 3px 10px rgba(0,0,0,.08)
-}
-
-/* ===== 顶栏（居中烫金） ===== */
-header{
-  padding:1.2rem 1rem 1rem;
-  border-radius:0 0 24px 24px;
-  text-align:center;
-  background:var(--card);
-  box-shadow:0 2px 8px rgba(0,0,0,.06)
-}
-header h1{
-  font-size:1.35rem;font-weight:700;letter-spacing:.03em;line-height:1.3;
-  background:linear-gradient(45deg,#d6b36b 80%,#f7edd5 45%,#b98e4c 80%);
-  -webkit-background-clip:text;
-  background-clip:text;
-  -webkit-text-fill-color:transparent;
-  text-shadow:0 1px 2px rgba(0,0,0,.25)
-}
-
-/* ===== 主体 ===== */
-main{flex:1;overflow-y:auto;padding:1.3rem 1.3rem 5rem}
-#carousel{position:relative;width:100%;height:45vw;max-height:240px;border-radius:24px;overflow:hidden;margin-bottom:1.4rem}
-#carousel img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .8s}
-#carousel img.active{opacity:1}
-.map-card{height:44vw;max-height:260px;margin-bottom:1.5rem;
-          background:#d9c2a4 url("icons/map-placeholder.svg") center/60% no-repeat;border-radius:24px}
-
-.section-title{font-size:1.05rem;font-weight:600;margin:.6rem 0 .35rem}
-.opening-info{font-size:.95rem;display:flex;align-items:center;gap:.4rem;margin-bottom:1.25rem}
-.tick{width:1.15rem;height:1.15rem;background:url("icons/check-24-filled.svg") center/contain no-repeat}
-
-.events{display:flex;gap:1rem}
-.event-item{flex:1;text-align:center}
-.event-thumb{padding-top:100%;border-radius:20px;
-             background:#d9c2a4 url("icons/placeholder.svg") center/70% no-repeat;margin-bottom:.45rem}
-.event-item p{font-size:.88rem;color:var(--primary)}
-
-/* ===== 底栏 ===== */
-.bottom-nav{
-  position:fixed;left:0;bottom:0;width:100%;height:4.2rem;
-  background:var(--card);
-  border-radius:24px 24px 0 0;
-  box-shadow:0 -3px 10px rgba(0,0,0,.08);
-  display:flex;justify-content:space-around;align-items:center
-}
-.nav-item{flex:1;display:flex;      flex-direction:column;        
-    align-items:center;
-          font-size:.8rem;color:var(--primary);
- -webkit-user-select:none;
-          user-select:none}
-.nav-item .icon{width:1.6rem;height:1.6rem;margin-bottom:.18rem}
-.nav-item.active{color:var(--text)}
-/* 导航项<a>标签样式 */
-    a.nav-item { /* 应用于作为链接的导航项 */
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        font-size: 12px;
-        color: #555; /* 链接的默认颜色 */
-        text-decoration: none !important; /* 关键：移除下划线，!important确保覆盖默认样式 */
-        flex: 1;
-        text-align: center;
-        padding: 5px 0;
-        transition: color 0.2s ease-in-out;
-    }
-    .map-container {
-            width: 100%; /* 父容器宽度占满 */
-            height: 300px; /* 父容器高度，可以根据需要调整 */
-        }
-
-    .map-card {
-            width: 100%;
-            padding-bottom: 100%; /* 1:1 宽高比 */
-            position: relative;
-            background: url('img/map.png') center/cover no-repeat;
-        }
-</style>
+<link rel="stylesheet" href="styles/base.css">
+<link rel="stylesheet" href="styles/main.css">
+<!-- 主题样式将通过theme.js动态加载 -->
 </head>
 
 <body>
@@ -123,47 +15,17 @@ main{flex:1;overflow-y:auto;padding:1.3rem 1.3rem 5rem}
   </header>
 
   <main>
-    <!-- <div id="carousel" class="card">
-      <img src="img/museum1.jpg" class="active" alt="">
-      <img src="img/museum2.jpg" alt="">
-      <img src="img/museum3.jpg" alt="">
-    </div> -->
-
-    <!-- <div class="map-card" aria-label="导览地图"></div> -->
-     <!-- <div class="section-title">参观导览图</div>
-     <div class="map-card"
-     style="background:url('img/map.png') center/cover no-repeat;"
-     aria-label="导览地图"></div> -->
      <div class="map-card" aria-label="导览地图"></div>
-<!-- <div class="map-card card" style="padding:0;overflow:hidden;">
-  
-
-
-  <iframe
-    src="https://m.amap.com/navi/?dest=121.4551,31.2332&destName=西王花园弄堂博物馆&hideRouteIcon=1"
-    width="100%"
-    height="100%"
-    frameborder="0"
-    style="border:0; border-radius:24px;"
-    allowfullscreen
-    aria-label="导览地图">
-  </iframe>
-</div> -->
-
-     
 
     <div class="section-title">开放时间</div>
     <div class="opening-info">
       <span class="tick"></span><span>今日开放 09:00‑17:00<br>
-
         占位置用占位置用占位置用占位置用占位置用<br>
      占位置用占位置用占位置用占位置用占位置用<br>
      占位置用占位置用占位置用占位置用占位置用<br>
      占位置用占位置用占位置用占位置用占位置用<br>
      占位置用占位置用占位置用占位置用占位置用<br>
-
       </span>
-     
     </div>
 
     <div class="section-title">近期活动</div>
@@ -184,26 +46,6 @@ main{flex:1;overflow-y:auto;padding:1.3rem 1.3rem 5rem}
     <p>活动2</p>
   </div>
 </div>
-<!-- <div class="events">
-  <div class="event-item">
-    <div class="event-thumb card"
-         style="background:url('https://picsum.photos/400?random=15') center/cover no-repeat;"></div>
-    <p>展览2</p>
-  </div>
-  <div class="event-item">
-    <div class="event-thumb card"
-         style="background:url('https://picsum.photos/400?random=16') center/cover no-repeat;"></div>
-    <p>活动3</p>
-  </div>
-  <div class="event-item">
-    <div class="event-thumb card"
-         style="background:url('https://picsum.photos/400?random=17') center/cover no-repeat;"></div>
-    <p>活动4</p>
-  </div>
-</div> -->
-    
-    
-
 
   </main>
 
@@ -229,31 +71,6 @@ main{flex:1;overflow-y:auto;padding:1.3rem 1.3rem 5rem}
       </svg><div>个人中心</div></a>
   </footer>
 
-<script>
-/* 轮播 */
-(function(){
-  const imgs=[...document.querySelectorAll('#carousel img')];
-  let i=0;
-  setInterval(()=>{imgs[i].classList.remove('active');i=(i+1)%imgs.length;imgs[i].classList.add('active');},4000);
-})();
-
-/* 主题切换工具（接口不变，个人中心页可调用 setTheme('light'|'dark'|'auto')） */
-(function(){
-  const style=document.getElementById('theme-style');
-  const light=`
-    --grad-start:#f6e7cd;--grad-end:#dfc295;
-    --primary:#b07a43;--text:#4d3a13;
-    --card:#fff8ef`;
-  const dark=`
-    --grad-start:#3f3425;--grad-end:#241e14;
-    --primary:#e0b67a;--text:#f5f0ea;
-    --card:#4d402d`;
-  const mq=matchMedia('(prefers-color-scheme:dark)');
-  function apply(m){style.textContent=':root{'+(m==='dark'?dark:m==='light'?light:(mq.matches?dark:light))+'}';}
-  const saved=localStorage.getItem('museumTheme')||'auto';apply(saved);
-  mq.addEventListener('change',()=>{if((localStorage.getItem('museumTheme')||'auto')==='auto')apply('auto');});
-  window.setTheme=function(m){localStorage.setItem('museumTheme',m);apply(m);}
-})();
-</script>
+<script src="scripts/theme.js"></script><!-- 主题切换脚本 -->
 </body>
 </html>
