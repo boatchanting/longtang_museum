@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>帖子详情</title>
+  <!-- 引入公共样式 -->
+  <link rel="stylesheet" href="../../styles/base.css">
+  <link rel="stylesheet" href="../../styles/main.css">
+  <!-- 主题占位，供 theme.js 动态写入 -->
+<style id="theme-style"></style>
+  <style>
+    header h1 {
+      font-size: 1.3rem;
+      font-weight: 700;
+    }
+    main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1rem;
+      padding-bottom: calc(4.2rem + 1.5rem);   /* 约 5.7 rem，可按需调整 *//* === 让页面内容底部留白，避免被固定导航覆盖 === */
+    }
+    
+    #carousel {
+      position: relative;
+      width: 100%;
+      height: 100vw;
+      max-height: 320px;
+      border-radius: 24px;
+      overflow: hidden;
+      margin-bottom: 1rem;
+    }
+    #carousel img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity .6s;
+    }
+    .carousel-indicators {
+      position: absolute;
+      bottom: 1rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 0.5rem;
+      z-index: 2;
+    }
+    .indicator {
+      width: 0.8rem;
+      height: 0.8rem;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.5);
+      cursor: pointer;
+    }
+    .indicator.active {
+      background: rgba(255,255,255,0.9);
+    }
+    #carousel img.active {
+      opacity: 1;
+    }
+    .carousel-counter {
+      position: absolute;
+      bottom: 0.5rem;
+      left: 0;
+      right: 0;
+      text-align: center;
+      font-size: 0.9rem;
+      color: #fff;
+      z-index: 2;
+    }
+    h2 {
+      margin: 0.6rem 0 0.3rem;
+      font-size: 1.1rem;
+    }
+    .post-info {
+      font-size: .85rem;
+      color: #777;
+      margin: 0.5rem 0 1rem;
+    }
+    p {
+      font-size: .95rem;
+      line-height: 1.5;
+    }
+    .action-bar {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: .6rem .8rem;
+      background: var(--card);
+      box-shadow: 0 -2px 6px rgba(0,0,0,.05);
+    }
+    .action-bar span {
+      font-size: .9rem;
+      cursor: pointer;
+      user-select: none;
+      text-align: center;
+      flex: 1;
+    }
+    .liked {
+      color: #e63946;
+    }
+    .favorite-btn.active {
+      color: gold;
+    }
+
+    /* ===== 帖子标题 ===== */
+h2 {
+  margin: .8rem 0 .6rem;
+  font-size: 1.4rem;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--text);
+  /* 背景渐变高亮 */
+  background: linear-gradient(90deg,var(--primary) 0%,var(--grad-end) 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+  /* ===== Meta 信息块 ===== */
+  .post-card{
+  padding: 1.2rem 1.4rem;      /* 内边距 */
+  margin-top: 1rem;            /* 与轮播/其他组件留间距 */
+  box-shadow: 0 4px 12px rgba(0,0,0,.05);
+  /* 继承 .card 的背景色和圆角 */
+  }
+  .post-info{
+    display:flex;
+    flex-wrap:wrap;             /* 小屏换行 */
+    column-gap:1.2rem;
+    row-gap:.2rem;
+    margin-bottom:1rem;
+    font-size:.8rem;
+    color:var(--text);
+  }
+  .post-info p{
+    margin:0;
+    position:relative;
+    padding-left:1.1rem;        /* 给图标留位置 */
+  }
+  .post-info p::before{         /* 小图标圆点 */
+    content:"";
+    position:absolute;
+    left:0;
+    top:50%;
+    width:.45rem;
+    height:.45rem;
+    border-radius:50%;
+    background:var(--primary);
+    transform:translateY(-50%);
+  }
+
+  /* ===== 正文段落 ===== */
+  main > p{
+    margin:0 0 1.5rem;
+    font-size:.95rem;
+    line-height:1.65;
+    letter-spacing:.02em;
+    color:var(--text);
+    text-indent:1em;
+  }
+
+  /* 暗黑模式兼容 */
+  @media (prefers-color-scheme: dark){
+    .post-info p::before{background:var(--grad-end);}
+  }
+
+    /* 底部导航栏 */
+    .bottom-nav {
+      position: fixed;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      height: 4.2rem;
+      background: var(--card);
+      border-radius: 24px 24px 0 0;
+      box-shadow: 0 -3px 10px rgba(0,0,0,.08);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 999;
+    }
+    .bottom-nav a {
+      flex: 1;
+      text-decoration: none;
+      color: var(--primary);
+      font-size: .8rem;
+      text-align: center;
+    }
+    .bottom-nav a.active {
+      color: var(--text);
+    }
+    .bottom-nav .icon {
+      width: 1.6rem;
+      height: 1.6rem;
+      margin: 0 auto .1rem;
+      display: block;
+    }
+
+    /* ——— 评论区 ——— */
+    .comments{background:var(--card);border-radius:24px;padding:1rem;margin-top:1.2rem}
+    .comments h3{margin:0 0 .8rem;font-size:1rem;font-weight:600}
+    .comment-item{display:flex;gap:.75rem;margin-bottom:1rem}
+    .comment-item:last-child{margin-bottom:0}
+    .comment-avatar{flex-shrink:0;width:2.4rem;height:2.4rem;border-radius:50%;object-fit:cover}
+    .comment-body{flex:1}
+    .comment-meta{display:flex;align-items:center;gap:.4rem;font-size:.8rem;color:#888;margin-bottom:.2rem}
+    .comment-nick{font-weight:600;color:var(--text)}
+    .comment-text{font-size:.9rem;line-height:1.45;color:var(--text)}
+
+    /* ---------- 回复（子评论）样式 ---------- */
+    .reply-list{
+      margin-top:.55rem;
+      padding-left:2.6rem;               /* 整体缩进 */
+      display:flex;
+      flex-direction:column;
+      gap:.75rem;
+      border-left:2px solid rgba(0,0,0,.05);   /* 视觉层级分隔 */
+    }
+    .reply-item{display:flex;gap:.6rem}
+    .reply-avatar{
+      flex-shrink:0;
+      width:1.9rem;height:1.9rem;
+      border-radius:50%;object-fit:cover
+    }
+    .reply-body{flex:1}
+    .reply-meta{
+      font-size:.75rem;color:#888;margin-bottom:.15rem;
+      display:flex;align-items:center;gap:.35rem
+    }
+    .reply-nick{font-weight:600;color:var(--text)}
+    .reply-text{font-size:.85rem;line-height:1.45;color:var(--text)}
+
+  </style>
+</head>
+<body>
+
+  <header class="card">
+    <h1>帖子详情</h1>
+  </header>
+
+<main>
+  <div id="carousel" class="card">
+   <img src="../../img/帖子1-1.jpeg" class="active" alt="">
+   <img src="../../img/帖子1-2.jpeg" alt="">
+   <img src="../../img/帖子1-3.jpeg" alt="">
+   <div class="carousel-counter"></div>
+  </div>
+
+  <section class="post-card card">
+   <h2>穿越安妮女王时代~王家沙旁这个免费博物馆美到窒息</h2>
+
+   <div class="post-info">
+    <p>Cisum</p>
+    <p>发布时间：2025-05-12 15:30</p>
+    <p>浏览次数：<span id="view-count">213</span>次</p>
+   </div>
+
+   <p>
+    王家沙点心店门口永远排着长龙，但拐进奉贤路百米，12幢安妮女王风格的红砖洋房突然撞入眼帘——这里就是几乎被游客忽略的西王花园弄堂博物馆。<br>
+<br>
+挑高的拱门廊柱、雕花铁艺阳台、彩色玻璃窗，在梧桐树影里讲述着1920年的上海故事。最神奇的是，明明与南京西路喧嚣仅一街之隔，推开黑漆铁门就像按下静音键，连脚步声都变得清晰起来。
+   </p>
+  </section>
+
+  <!-- *** 评论区 *** -->
+  <section class="comments">
+   <!-- ===== 评论 1 ===== -->
+   <div class="comment-item">
+    <img class="comment-avatar" src="https://picsum.photos/80/80?random=31" alt="avatar">
+    <div class="comment-body">
+     <div class="comment-meta">
+      <span class="comment-nick">翠鸟</span><span>·</span><span>3 天前</span>
+     </div>
+     <div class="comment-text">我以前就住在这附近</div>
+
+     <!-- ★ 评论1回复列表 -->
+     <div class="reply-list">
+      <!-- 回复 1-1 -->
+      <div class="reply-item">
+       <img class="reply-avatar" src="https://picsum.photos/60/60?random=41" alt="avatar">
+       <div class="reply-body">
+        <div class="reply-meta">
+         <span class="reply-nick">Cisum</span><span>·</span><span>3 天前</span>
+        </div>
+        <div class="reply-text">环境很不错的小区，里面的老房子也很漂亮~</div>
+       </div>
+      </div>
+
+      <!-- 回复 1-2 -->
+      <div class="reply-item">
+       <img class="reply-avatar" src="https://picsum.photos/60/60?random=42" alt="avatar">
+       <div class="reply-body">
+        <div class="reply-meta">
+         <span class="reply-nick">邮差</span><span>·</span><span>刚刚</span>
+        </div>
+        <div class="reply-text">我是北京西路第二小学的，我的阿娘之前就住在那里</div>
+       </div>
+      </div>
+     </div>
+    </div>
+   </div>
+
+   <!-- ===== 评论 2 ===== -->
+   <div class="comment-item">
+    <img class="comment-avatar" src="https://picsum.photos/80/80?random=32" alt="avatar">
+    <div class="comment-body">
+     <div class="comment-meta">
+      <span class="comment-nick">大师兄</span><span>·</span><span>昨天</span>
+     </div>
+     <div class="comment-text">很不错的博物馆。4月初刚去过</div>
+    </div>
+   </div>
+
+   <!-- ===== 评论 3 ===== -->
+   <div class="comment-item">
+    <img class="comment-avatar" src="https://picsum.photos/80/80?random=33" alt="avatar">
+    <div class="comment-body">
+     <div class="comment-meta">
+      <span class="comment-nick">婉君</span><span>·</span><span>3小时前</span>
+     </div>
+     <div class="comment-text">弄堂博物馆看着不错哎，等风凉点去逛逛</div>
+    </div>
+   </div>
+   <!-- ===== 评论 4 ===== -->
+<div class="comment-item">
+ <img class="comment-avatar" src="https://picsum.photos/80/80?random=34" alt="avatar">
+ <div class="comment-body">
+  <div class="comment-meta">
+   <span class="comment-nick">历史控阿峰</span><span>·</span><span>2 小时前</span>
+  </div>
+  <div class="comment-text">彩色玻璃真的惊艳，竟然是免费开放的，爱了爱了！</div>
+ </div>
+</div>
+
+<!-- ===== 评论 5 ===== -->
+<div class="comment-item">
+ <img class="comment-avatar" src="https://picsum.photos/80/80?random=35" alt="avatar">
+ <div class="comment-body">
+  <div class="comment-meta">
+   <span class="comment-nick">旧城漫步</span><span>·</span><span>1 天前</span>
+  </div>
+  <div class="comment-text">建议工作日去，人少还能慢慢拍照～周末人有点多</div>
+ </div>
+</div>
+
+<!-- ===== 评论 6 ===== -->
+<div class="comment-item">
+ <img class="comment-avatar" src="https://picsum.photos/80/80?random=36" alt="avatar">
+ <div class="comment-body">
+  <div class="comment-meta">
+   <span class="comment-nick">美术生咸鱼</span><span>·</span><span>5 小时前</span>
+  </div>
+  <div class="comment-text">阳台的铁艺太绝了，拍画的时候完全不需要滤镜</div>
+ </div>
+</div>
+
+<!-- ===== 评论 7 ===== -->
+<div class="comment-item">
+ <img class="comment-avatar" src="https://picsum.photos/80/80?random=37" alt="avatar">
+ <div class="comment-body">
+  <div class="comment-meta">
+   <span class="comment-nick">可达鸭鸭</span><span>·</span><span>今天</span>
+  </div>
+  <div class="comment-text">去的那天刚好有讲解员带队，听完才发现每栋楼都有故事！</div>
+ </div>
+</div>
+
+<!-- ===== 评论 8 ===== -->
+<div class="comment-item">
+ <img class="comment-avatar" src="https://picsum.photos/80/80?random=38" alt="avatar">
+ <div class="comment-body">
+  <div class="comment-meta">
+   <span class="comment-nick">走路很快</span><span>·</span><span>3 天前</span>
+  </div>
+  <div class="comment-text">从地铁出来走五分钟就到了，真的适合散步打卡</div>
+ </div>
+</div>
+
+  </section>
+  </main>
+
+  <footer class="bottom-nav card">
+    <span id="like-btn">❤ <span id="like-count">45</span></span>
+    <span id="favorite-btn" class="favorite-btn">⭐ <span id="favorite-count">10</span></span>
+    <span onclick="showComments()">💬 <span id="comment-count">12</span></span>
+    <span onclick="sharePost()">🔗 分享</span>
+  </footer>
+
+  <script>
+    // 手动轮播逻辑
+    (function(){
+      const carousel = document.getElementById('carousel');
+      const imgs = [...carousel.querySelectorAll('img:not(.carousel-counter)')];
+      const counter = carousel.querySelector('.carousel-counter');
+      const indicators = document.createElement('div');
+      let idx = 0;
+      let touchStartX = 0;
+      let touchEndX = 0;
+
+      // 创建指示器
+      indicators.className = 'carousel-indicators';
+      imgs.forEach((_, i) => {
+        const dot = document.createElement('span');
+        dot.className = `indicator ${i === 0 ? 'active' : ''}`;
+        indicators.appendChild(dot);
+      });
+      carousel.appendChild(indicators);
+
+      function updateIndicator() {
+        document.querySelectorAll('.indicator').forEach((dot, i) => {
+          dot.classList.toggle('active', i === idx);
+        });
+      }
+      function switchImage(step) {
+        imgs[idx].classList.remove('active');
+        idx = (idx + step + imgs.length) % imgs.length;
+        imgs[idx].classList.add('active');
+        updateIndicator();
+      }
+      carousel.addEventListener('touchstart', e => {
+        touchStartX = e.touches[0].clientX;
+      });
+      carousel.addEventListener('touchend', e => {
+        touchEndX = e.changedTouches[0].clientX;
+        const diff = touchStartX - touchEndX;
+        if (Math.abs(diff) > 50) {
+          switchImage(diff > 0 ? 1 : -1);
+        }
+      });
+      updateIndicator();
+    })();
+  </script>
+  <script>
+
+    // ——— 页面初始化 ———
+    window.addEventListener('DOMContentLoaded', () => {
+      // 初始化点赞状态
+      const isLiked = localStorage.getItem('postLiked') === 'true';
+      const likeBtn = document.getElementById('like-btn');
+      likeBtn.classList.toggle('liked', isLiked);
+
+      // 初始化收藏状态
+      const isFavorited = localStorage.getItem('postFavorited') === 'true';
+      const favoriteBtn = document.getElementById('favorite-btn');
+      favoriteBtn.classList.toggle('active', isFavorited);
+
+      // 恢复计数器
+      document.getElementById('like-count').textContent = localStorage.getItem('likeCount') || 45;
+      document.getElementById('favorite-count').textContent = localStorage.getItem('favoriteCount') || 10;
+      document.getElementById('comment-count').textContent = localStorage.getItem('commentCount') || comments.length;
+
+      // 增加浏览次数
+      const viewCount = document.getElementById('view-count');
+      let views = +viewCount.textContent + 1;
+      viewCount.textContent = views;
+
+      // 渲染评论
+      renderComments();
+    });
+
+    // 点赞功能
+    function toggleLike(){
+      const btn = document.getElementById('like-btn');
+      const cnt = document.getElementById('like-count');
+      let n = +cnt.textContent;
+      const isActive = btn.classList.toggle('liked');
+      n = isActive ? n + 1 : n - 1;
+      cnt.textContent = n;
+      localStorage.setItem('postLiked', isActive);
+      localStorage.setItem('likeCount', n);
+    }
+    document.getElementById('like-btn').onclick = toggleLike;
+    document.getElementById('carousel').ondblclick = toggleLike;
+
+    // 收藏功能
+    function toggleFavorite() {
+      const btn = document.getElementById('favorite-btn');
+      const cnt = document.getElementById('favorite-count');
+      let n = +cnt.textContent;
+      const isActive = btn.classList.toggle('active');
+      n = isActive ? n + 1 : n - 1;
+      cnt.textContent = n;
+      localStorage.setItem('postFavorited', isActive);
+      localStorage.setItem('favoriteCount', n);
+    }
+    document.getElementById('favorite-btn').onclick = toggleFavorite;
+
+    // 分享功能
+    function sharePost() {
+      const postUrl = window.location.href;
+      navigator.clipboard.writeText(postUrl).then(() => {
+        alert('链接已复制到剪贴板！');
+      }).catch(() => {
+        prompt('请手动复制链接:', postUrl);
+      });
+    }
+  </script>
+  <!-- 主题脚本 -->
+  <script src="../../scripts/theme.js"></script>
+</body>
+</html>

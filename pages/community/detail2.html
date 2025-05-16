@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>帖子详情</title>
+  <!-- 引入公共样式 -->
+  <link rel="stylesheet" href="../../styles/base.css">
+  <link rel="stylesheet" href="../../styles/main.css">
+  <!-- 主题占位，供 theme.js 动态写入 -->
+<style id="theme-style"></style>
+  <style>
+    header h1 {
+      font-size: 1.3rem;
+      font-weight: 700;
+    }
+    main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1rem;
+      padding-bottom: calc(4.2rem + 1.5rem);   /* 约 5.7 rem，可按需调整 *//* === 让页面内容底部留白，避免被固定导航覆盖 === */
+    }
+    
+    #carousel {
+      position: relative;
+      width: 100%;
+      height: 100vw;
+      max-height: 320px;
+      border-radius: 24px;
+      overflow: hidden;
+      margin-bottom: 1rem;
+    }
+    #carousel img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity .6s;
+    }
+    .carousel-indicators {
+      position: absolute;
+      bottom: 1rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 0.5rem;
+      z-index: 2;
+    }
+    .indicator {
+      width: 0.8rem;
+      height: 0.8rem;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.5);
+      cursor: pointer;
+    }
+    .indicator.active {
+      background: rgba(255,255,255,0.9);
+    }
+    #carousel img.active {
+      opacity: 1;
+    }
+    .carousel-counter {
+      position: absolute;
+      bottom: 0.5rem;
+      left: 0;
+      right: 0;
+      text-align: center;
+      font-size: 0.9rem;
+      color: #fff;
+      z-index: 2;
+    }
+    h2 {
+      margin: 0.6rem 0 0.3rem;
+      font-size: 1.1rem;
+    }
+    .post-info {
+      font-size: .85rem;
+      color: #777;
+      margin: 0.5rem 0 1rem;
+    }
+    p {
+      font-size: .95rem;
+      line-height: 1.5;
+    }
+    .action-bar {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: .6rem .8rem;
+      background: var(--card);
+      box-shadow: 0 -2px 6px rgba(0,0,0,.05);
+    }
+    .action-bar span {
+      font-size: .9rem;
+      cursor: pointer;
+      user-select: none;
+      text-align: center;
+      flex: 1;
+    }
+    .liked {
+      color: #e63946;
+    }
+    .favorite-btn.active {
+      color: gold;
+    }
+
+    /* ===== 帖子标题 ===== */
+h2 {
+  margin: .8rem 0 .6rem;
+  font-size: 1.4rem;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--text);
+  /* 背景渐变高亮 */
+  background: linear-gradient(90deg,var(--primary) 0%,var(--grad-end) 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+  /* ===== Meta 信息块 ===== */
+  .post-card{
+  padding: 1.2rem 1.4rem;      /* 内边距 */
+  margin-top: 1rem;            /* 与轮播/其他组件留间距 */
+  box-shadow: 0 4px 12px rgba(0,0,0,.05);
+  /* 继承 .card 的背景色和圆角 */
+  }
+  .post-info{
+    display:flex;
+    flex-wrap:wrap;             /* 小屏换行 */
+    column-gap:1.2rem;
+    row-gap:.2rem;
+    margin-bottom:1rem;
+    font-size:.8rem;
+    color:var(--text);
+  }
+  .post-info p{
+    margin:0;
+    position:relative;
+    padding-left:1.1rem;        /* 给图标留位置 */
+  }
+  .post-info p::before{         /* 小图标圆点 */
+    content:"";
+    position:absolute;
+    left:0;
+    top:50%;
+    width:.45rem;
+    height:.45rem;
+    border-radius:50%;
+    background:var(--primary);
+    transform:translateY(-50%);
+  }
+
+  /* ===== 正文段落 ===== */
+  main > p{
+    margin:0 0 1.5rem;
+    font-size:.95rem;
+    line-height:1.65;
+    letter-spacing:.02em;
+    color:var(--text);
+    text-indent:1em;
+  }
+
+  /* 暗黑模式兼容 */
+  @media (prefers-color-scheme: dark){
+    .post-info p::before{background:var(--grad-end);}
+  }
+
+    /* 底部导航栏 */
+    .bottom-nav {
+      position: fixed;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      height: 4.2rem;
+      background: var(--card);
+      border-radius: 24px 24px 0 0;
+      box-shadow: 0 -3px 10px rgba(0,0,0,.08);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 999;
+    }
+    .bottom-nav a {
+      flex: 1;
+      text-decoration: none;
+      color: var(--primary);
+      font-size: .8rem;
+      text-align: center;
+    }
+    .bottom-nav a.active {
+      color: var(--text);
+    }
+    .bottom-nav .icon {
+      width: 1.6rem;
+      height: 1.6rem;
+      margin: 0 auto .1rem;
+      display: block;
+    }
+
+    /* ——— 评论区 ——— */
+    .comments{background:var(--card);border-radius:24px;padding:1rem;margin-top:1.2rem}
+    .comments h3{margin:0 0 .8rem;font-size:1rem;font-weight:600}
+    .comment-item{display:flex;gap:.75rem;margin-bottom:1rem}
+    .comment-item:last-child{margin-bottom:0}
+    .comment-avatar{flex-shrink:0;width:2.4rem;height:2.4rem;border-radius:50%;object-fit:cover}
+    .comment-body{flex:1}
+    .comment-meta{display:flex;align-items:center;gap:.4rem;font-size:.8rem;color:#888;margin-bottom:.2rem}
+    .comment-nick{font-weight:600;color:var(--text)}
+    .comment-text{font-size:.9rem;line-height:1.45;color:var(--text)}
+
+    /* ---------- 回复（子评论）样式 ---------- */
+    .reply-list{
+      margin-top:.55rem;
+      padding-left:2.6rem;               /* 整体缩进 */
+      display:flex;
+      flex-direction:column;
+      gap:.75rem;
+      border-left:2px solid rgba(0,0,0,.05);   /* 视觉层级分隔 */
+    }
+    .reply-item{display:flex;gap:.6rem}
+    .reply-avatar{
+      flex-shrink:0;
+      width:1.9rem;height:1.9rem;
+      border-radius:50%;object-fit:cover
+    }
+    .reply-body{flex:1}
+    .reply-meta{
+      font-size:.75rem;color:#888;margin-bottom:.15rem;
+      display:flex;align-items:center;gap:.35rem
+    }
+    .reply-nick{font-weight:600;color:var(--text)}
+    .reply-text{font-size:.85rem;line-height:1.45;color:var(--text)}
+
+  </style>
+</head>
+<body>
+
+  <header class="card">
+    <h1>帖子详情</h1>
+  </header>
+
+  <main>
+  <div id="carousel" class="card">
+   <img src="../../img/帖子2-1.jpeg" class="active" alt="">
+   <img src="../../img/帖子2-2.jpeg" alt="">
+   <img src="../../img/帖子2-3.jpeg" alt="">
+   <div class="carousel-counter"></div>
+  </div>
+
+  <section class="post-card card">
+   <h2>触摸百年前的租界记忆，每一块界碑都是故事</h2>
+
+   <div class="post-info">
+    <p>蔷薇少女</p>
+    <p>发布时间：2025-05-1614:36</p>
+    <p>浏览次数：<span id="view-count">271</span>次</p>
+   </div>
+
+   <p>
+    在南京西路繁华背后，藏着一片1930年代的英式洋房群——西王小区。安妮女王风格的红砖拱窗、铸铁阳台，仿佛一秒穿越回老上海。而更让人惊喜的是，小区入口处竟有一座免费的弄堂博物馆，浓缩了这座城市百年的土地记忆。
+博物馆里有数百块上海旧时界碑，租界边界、道路界石、外国人租地地契碑……每一块都刻着消失的地名，像一本“土地身份证”；老门牌、楼梯构件、壁炉等细节保留完整，触摸时仿佛能听见30年代的风声。虽然这个博物馆很迷你，但每一件展品都让人驻足良久，尤其是界碑上的刻字，清晰记录着城市的变迁。<br>
+<br>
+这里人少安静，和南京西路的喧嚣形成鲜明对比；加上建筑本身超好拍，英式楼梯、彩窗、红砖墙都很出片；最重要的是免费开放（周一闭馆），顺路还能打卡王家沙老字号。<br>
+<br>
+站在这些界碑前，突然觉得——上海的历史，原来就藏在这些石头的缝隙里。
+   </p>
+  </section>
+
+  <!-- *** 评论区 *** -->
+  <section class="comments">
+   <!-- ===== 评论 1 ===== -->
+   <div class="comment-item">
+    <img class="comment-avatar" src="https://picsum.photos/80/80?random=31" alt="avatar">
+    <div class="comment-body">
+     <div class="comment-meta">
+      <span class="comment-nick">bisous</span><span>·</span><span>17 小时前</span>
+     </div>
+     <div class="comment-text">在附近绕了一下才找到，门和招牌是真的很小，但是里面还不错，只有我们一家，慢慢悠悠闲逛</div>
+
+     <!-- ★ 评论1回复列表 -->
+     <div class="reply-list">
+      <!-- 回复 1-1 -->
+      <div class="reply-item">
+       <img class="reply-avatar" src="https://picsum.photos/60/60?random=41" alt="avatar">
+       <div class="reply-body">
+        <div class="reply-meta">
+         <span class="reply-nick">楼主</span><span>·</span><span>16 小时前</span>
+        </div>
+        <div class="reply-text">我也是为了套近路，穿过弄堂才发现这个博物馆</div>
+       </div>
+      </div>
+
+      <!-- 回复 1-2 -->
+      <div class="reply-item">
+       <img class="reply-avatar" src="https://picsum.photos/60/60?random=42" alt="avatar">
+       <div class="reply-body">
+        <div class="reply-meta">
+         <span class="reply-nick">铅笔橡皮</span><span>·</span><span>13 小时前</span>
+        </div>
+        <div class="reply-text">老婆的外婆家就在那，附近都是不会拆迁的历史保留建筑</div>
+       </div>
+      </div>
+     </div>
+    </div>
+   </div>
+
+   <!-- ===== 评论 2 ===== -->
+   <div class="comment-item">
+    <img class="comment-avatar" src="https://picsum.photos/80/80?random=32" alt="avatar">
+    <div class="comment-body">
+     <div class="comment-meta">
+      <span class="comment-nick">开心玉米棒</span><span>·</span><span>8 小时前</span>
+     </div>
+     <div class="comment-text">啊？这个就在我公司附近下次找个时候过去看看，小区门口有一些有意思的雕塑的</div>
+    </div>
+   </div>
+
+   <!-- ===== 评论 3 ===== -->
+   <div class="comment-item">
+    <img class="comment-avatar" src="https://picsum.photos/80/80?random=33" alt="avatar">
+    <div class="comment-body">
+     <div class="comment-meta">
+      <span class="comment-nick">油猫饼</span><span>·</span><span>45 分钟前</span>
+     </div>
+     <div class="comment-text">这家博物馆在我的list里！打算过两天去转转</div>
+    </div>
+   </div>
+
+      <!-- ===== 评论 4 ===== -->
+   <div class="comment-item">
+    <img class="comment-avatar" src="https://picsum.photos/80/80?random=34" alt="avatar">
+    <div class="comment-body">
+     <div class="comment-meta">
+      <span class="comment-nick">拾光旅人</span><span>·</span><span>30 分钟前</span>
+     </div>
+     <div class="comment-text">上次偶然看到有人在这拍婚纱照，红砖墙真的超有英伦味道，氛围感拉满。</div>
+
+     <!-- ★ 评论4回复列表 -->
+     <div class="reply-list">
+      <!-- 回复 4-1 -->
+      <div class="reply-item">
+       <img class="reply-avatar" src="https://picsum.photos/60/60?random=43" alt="avatar">
+       <div class="reply-body">
+        <div class="reply-meta">
+         <span class="reply-nick">Luna.</span><span>·</span><span>28 分钟前</span>
+        </div>
+        <div class="reply-text">我朋友也在那里拍过，拍出来的照片好像《恋恋笔记本》那种复古感！</div>
+       </div>
+      </div>
+     </div>
+    </div>
+   </div>
+
+   <!-- ===== 评论 5 ===== -->
+   <div class="comment-item">
+    <img class="comment-avatar" src="https://picsum.photos/80/80?random=35" alt="avatar">
+    <div class="comment-body">
+     <div class="comment-meta">
+      <span class="comment-nick">藏在枫叶后</span><span>·</span><span>20 分钟前</span>
+     </div>
+     <div class="comment-text">博物馆不大但很有内容，看见那些地契碑感觉像打开一页页老上海的历史书。</div>
+
+     <!-- ★ 评论5回复列表 -->
+     <div class="reply-list">
+      <!-- 回复 5-1 -->
+      <div class="reply-item">
+       <img class="reply-avatar" src="https://picsum.photos/60/60?random=44" alt="avatar">
+       <div class="reply-body">
+        <div class="reply-meta">
+         <span class="reply-nick">时间观察者</span><span>·</span><span>18 分钟前</span>
+        </div>
+        <div class="reply-text">+1，那些界碑上的刻字好像在讲述一段段被遗忘的故事</div>
+       </div>
+      </div>
+      <!-- 回复 5-2 -->
+      <div class="reply-item">
+       <img class="reply-avatar" src="https://picsum.photos/60/60?random=45" alt="avatar">
+       <div class="reply-body">
+        <div class="reply-meta">
+         <span class="reply-nick">猫走廊</span><span>·</span><span>17 分钟前</span>
+        </div>
+        <div class="reply-text">我爸小时候就在那附近长大，说以前那块真的是“租界边界”</div>
+       </div>
+      </div>
+     </div>
+    </div>
+   </div>
+
+   <!-- ===== 评论 6 ===== -->
+   <div class="comment-item">
+    <img class="comment-avatar" src="https://picsum.photos/80/80?random=36" alt="avatar">
+    <div class="comment-body">
+     <div class="comment-meta">
+      <span class="comment-nick">Cheese蛋卷</span><span>·</span><span>5 分钟前</span>
+     </div>
+     <div class="comment-text">展品的布置挺用心的，尤其喜欢那个保存完好的木制楼梯，看得出原貌保留得很到位。</div>
+    </div>
+   </div>
+
+  </section>
+
+  </main>
+
+  <footer class="bottom-nav card">
+    <span id="like-btn">❤ <span id="like-count">45</span></span>
+    <span id="favorite-btn" class="favorite-btn">⭐ <span id="favorite-count">10</span></span>
+    <span onclick="showComments()">💬 <span id="comment-count">12</span></span>
+    <span onclick="sharePost()">🔗 分享</span>
+  </footer>
+
+  <script>
+    // 手动轮播逻辑
+    (function(){
+      const carousel = document.getElementById('carousel');
+      const imgs = [...carousel.querySelectorAll('img:not(.carousel-counter)')];
+      const counter = carousel.querySelector('.carousel-counter');
+      const indicators = document.createElement('div');
+      let idx = 0;
+      let touchStartX = 0;
+      let touchEndX = 0;
+
+      // 创建指示器
+      indicators.className = 'carousel-indicators';
+      imgs.forEach((_, i) => {
+        const dot = document.createElement('span');
+        dot.className = `indicator ${i === 0 ? 'active' : ''}`;
+        indicators.appendChild(dot);
+      });
+      carousel.appendChild(indicators);
+
+      function updateIndicator() {
+        document.querySelectorAll('.indicator').forEach((dot, i) => {
+          dot.classList.toggle('active', i === idx);
+        });
+      }
+      function switchImage(step) {
+        imgs[idx].classList.remove('active');
+        idx = (idx + step + imgs.length) % imgs.length;
+        imgs[idx].classList.add('active');
+        updateIndicator();
+      }
+      carousel.addEventListener('touchstart', e => {
+        touchStartX = e.touches[0].clientX;
+      });
+      carousel.addEventListener('touchend', e => {
+        touchEndX = e.changedTouches[0].clientX;
+        const diff = touchStartX - touchEndX;
+        if (Math.abs(diff) > 50) {
+          switchImage(diff > 0 ? 1 : -1);
+        }
+      });
+      updateIndicator();
+    })();
+  </script>
+  <script>
+
+    // ——— 页面初始化 ———
+    window.addEventListener('DOMContentLoaded', () => {
+      // 初始化点赞状态
+      const isLiked = localStorage.getItem('postLiked') === 'true';
+      const likeBtn = document.getElementById('like-btn');
+      likeBtn.classList.toggle('liked', isLiked);
+
+      // 初始化收藏状态
+      const isFavorited = localStorage.getItem('postFavorited') === 'true';
+      const favoriteBtn = document.getElementById('favorite-btn');
+      favoriteBtn.classList.toggle('active', isFavorited);
+
+      // 恢复计数器
+      document.getElementById('like-count').textContent = localStorage.getItem('likeCount') || 45;
+      document.getElementById('favorite-count').textContent = localStorage.getItem('favoriteCount') || 10;
+      document.getElementById('comment-count').textContent = localStorage.getItem('commentCount') || comments.length;
+
+      // 增加浏览次数
+      const viewCount = document.getElementById('view-count');
+      let views = +viewCount.textContent + 1;
+      viewCount.textContent = views;
+
+      // 渲染评论
+      renderComments();
+    });
+
+    // 点赞功能
+    function toggleLike(){
+      const btn = document.getElementById('like-btn');
+      const cnt = document.getElementById('like-count');
+      let n = +cnt.textContent;
+      const isActive = btn.classList.toggle('liked');
+      n = isActive ? n + 1 : n - 1;
+      cnt.textContent = n;
+      localStorage.setItem('postLiked', isActive);
+      localStorage.setItem('likeCount', n);
+    }
+    document.getElementById('like-btn').onclick = toggleLike;
+    document.getElementById('carousel').ondblclick = toggleLike;
+
+    // 收藏功能
+    function toggleFavorite() {
+      const btn = document.getElementById('favorite-btn');
+      const cnt = document.getElementById('favorite-count');
+      let n = +cnt.textContent;
+      const isActive = btn.classList.toggle('active');
+      n = isActive ? n + 1 : n - 1;
+      cnt.textContent = n;
+      localStorage.setItem('postFavorited', isActive);
+      localStorage.setItem('favoriteCount', n);
+    }
+    document.getElementById('favorite-btn').onclick = toggleFavorite;
+
+    // 分享功能
+    function sharePost() {
+      const postUrl = window.location.href;
+      navigator.clipboard.writeText(postUrl).then(() => {
+        alert('链接已复制到剪贴板！');
+      }).catch(() => {
+        prompt('请手动复制链接:', postUrl);
+      });
+    }
+  </script>
+  <!-- 主题脚本 -->
+  <script src="../../scripts/theme.js"></script>
+</body>
+</html>
