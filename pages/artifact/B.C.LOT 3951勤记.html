@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>B.C.LOT 3951勤记｜馆藏文物库</title>
+
+<!-- 复用全站基础样式 -->
+<link rel="stylesheet" href="../../styles/base.css">
+<link rel="stylesheet" href="../../styles/main.css">
+<!-- 主题占位，供 theme.js 动态写入 -->
+<style id="theme-style"></style>
+<!-- ===== 文物详情页私有样式 ===== -->
+<link rel="stylesheet" href="../../styles/openpicture.css">
+<style>
+/* Hero 图 */
+.hero {
+  position: relative;
+  width: 100%;
+  padding-bottom: 100%;         /* 1∶1 占位 */
+  overflow: hidden;
+  border-radius: 0 0 26px 26px;
+}
+.hero img{
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* 滚动区 */
+main{
+  flex:1;
+  overflow-y:auto;
+  padding:1.3rem 1.45rem 5rem;
+}
+
+/* Metadata 列表 */
+.meta-grid{
+  display:grid;
+  grid-template-columns:6.5rem 1fr;
+  row-gap:.55rem;
+  font-size:.86rem;
+  margin:1.1rem 0 .9rem;
+}
+.meta-grid dt{
+  font-weight:600;
+  color:var(--primary);
+}
+.meta-grid dd{
+  margin:0;
+  line-height:1.45;
+}
+
+/* Tag 云 */
+.tag-group{
+  display:flex;
+  flex-wrap:wrap;
+  gap:.45rem;
+  margin-bottom:1.2rem;
+}
+.tag{
+  font-size:.74rem;
+  padding:.15rem .55rem;
+  border-radius:14px;
+  background:rgba(178,123,66,.15);
+  color:var(--primary);
+}
+
+/* 简介文本 */
+.description{
+  font-size:.9rem;
+  line-height:1.6;
+  text-align:justify;
+}
+
+/* 返回按钮（左上角） */
+.back-btn{
+  position:absolute;
+  top:.9rem;left:.9rem;
+  width:2.2rem;height:2.2rem;
+  border-radius:50%;
+  background:rgba(0,0,0,.45);
+  display:flex;align-items:center;justify-content:center;
+}
+.back-btn svg{width:1.3rem;height:1.3rem;stroke:#fff;}
+</style>
+</head>
+
+<body>
+<!-- 图片展示区 -->
+<div class="hero card">
+<img src="../../img/B.C.LOT 3951 勤记.jpeg" alt="B.C.LOT 3951 勤记图片">
+<a href="../artifact.html" class="back-btn" aria-label="返回">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <path d="M15 18l-6-6 6-6"/>
+    </svg>
+</a>
+</div>
+
+<!-- 内容主体 -->
+<main>
+ <!-- 标题（与卡片标题同步） -->
+ <h2>B.C.LOT 3951 勤记 <br>B.C.LOT 3951 Qinji</h2>
+
+ <!-- 元数据表格 -->
+ <dl class="meta-grid">
+  <dt>时代</dt><dd>清代至民国</dd>
+  <dt>类别</dt><dd>地界碑</dd>
+  <dt>尺寸</dt><dd>28×11×65cm</dd>
+  <dt>材质</dt><dd>石质</dd>
+  <dt>出土时间</dt><dd>1901年</dd>
+  <dt>收藏单位</dt><dd>西王花园弄堂博物馆</dd> <!-- 也可以选择新建类别 -->
+ </dl>
+
+ <!-- 详细描述 -->
+ <div class="description">
+  B.C.LOT3951勤记是一块租地界碑，其历史可以追溯到光绪二十七年四月初六（1901年5月23日），当时国人黄国华将1.108亩土地以300元大洋永租给英商通和行。此后，该地陆续转租给克生、业广、扬子保险公司等。1921年2月4日，扬子保险公司将土地转回通和公司。翌年6月9日，通和公司添租0.157亩，合计实地1.265亩。该地位添并后，东至英册3316号地，西至姚姓地，南至新闸路，北至半浜十三图界。1943年1月13日，经日本领事馆批准，该地转立日册2015号，由中支那振兴株式会社“租用”。抗战胜利后，部分国人凭借原有道契登记并收回土地，“勤记”二字应该是归国人所有后的“补刻”。<br>
+   <br>
+从地理位置来看，该地位于二十七保八图贤字圩，土名华家桥之西，东至英册3316号地，西至姚姓地，南至新闸路，北至半浜十三图界。结合《上海市区域北市图》分析，8图与13图的分界可能在“南姚”南的河浜。东面的英册3316号地同样位于华家桥之西，南面被马路分隔成两块，总面积1.908亩。其他邻近道契如英4042号、英4662号、英7002号等，进一步明确了该区域的土地划分与流转情况。<br>
+   <br>
+B.C.LOT3951勤记界碑不仅是土地流转的实物证据，也是上海租界历史的重要见证。它记录了从英商租用到日军强占，再到国人收回的复杂过程，反映了近代上海在列强侵略与民族抗争中的历史变迁。界碑上的“勤记”二字，更是国人抗争与恢复主权的象征。
+  <!-- 示例内容 -->
+ </div>
+
+ <!-- 标签组（与卡片保持一致） -->
+ <div class="tag-group">
+  <span class="tag">租界变迁</span>
+  <span class="tag">上海历史</span>
+<span class="tag">地界碑刻</span>
+  <span class="tag">中西交融</span>
+  <span class="tag">清代至民国文物</span>
+ </div>
+</main>
+
+
+  </main>
+
+  <!-- 模态框 -->
+  <div class="modal-overlay" id="modal">
+    <span class="modal-close" id="modal-close">&times;</span>
+    <img class="modal-img" id="modal-img" src="" alt="大图">
+  </div>
+
+  <!-- ===== 底部导航（与其他页面保持一致） ===== -->
+  <footer class="bottom-nav card">
+    <a class="nav-item" href="../../index.html">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+      </svg><div>主页</div>
+    </a>
+
+    <a class="nav-item active" href="../artifact.html">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
+      </svg><div>馆藏文物库</div>
+    </a>
+
+    <a class="nav-item" href="../community.html">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+      </svg><div>社区</div>
+    </a>
+
+    <a class="nav-item" href="../profile.html">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+      </svg><div>个人中心</div>
+    </a>
+  </footer>
+
+<script src="../../scripts/theme.js"></script>
+<script src="../../scripts/openpicture.js"></script>
+</body>
+</html>
