@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no"/>
+<title>山羊の前端小窝</title>
+
+<meta name="screen-orientation" content="landscape" />
+<meta name="x5-orientation"    content="landscape" />
+
+<link rel="stylesheet" href="./font/iconfont.css"/>
+<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400&display=swap" rel="stylesheet"/>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:"Source Sans Pro",sans-serif}
+html,body{display:flex;justify-content:center;align-items:center;height:100vh;background-size:cover;transition:background-image .7s}
+@media(orientation:portrait){
+  body::before{content:"请横屏";position:fixed;inset:0;background:#000;color:#fff;display:flex;justify-content:center;align-items:center;font-size:24px;z-index:2}
+  .shell{display:none}
+}
+.shell{width:100%;height:100%;display:flex;justify-content:center;align-items:center;background:rgba(99,99,99,.8)}
+.shell_body{width:100%;overflow:hidden}
+.shell_slider{display:flex;transition:transform 1s ease-in-out;will-change:transform}
+.item{flex:0 0 auto;margin:0 20px;position:relative}
+.frame{width:100%;height:100%;transition:transform 1s ease-in-out;transform-style:preserve-3d}
+.frame::after{content:"";position:absolute;bottom:-16%;width:100%;height:60px;background:#ffffff1c;box-shadow:0 0 15px 5px #ffffff1c;transform:rotateX(90deg) translate3d(0,-20px,0)}
+.box{position:absolute;inset:0;border:4px solid #fff;display:flex;flex-direction:column;justify-content:center;align-items:center;transform-style:preserve-3d}
+.box h1,.box span{color:#fff;transform:translateZ(20px)}
+.box h1{font-size:100px;text-shadow:0 0 30px #1f05b4}
+.box span{position:absolute;bottom:20px;padding:0 25px;text-shadow:0 0 10px #1f05b4}
+.front,.left,.right{background-size:cover;box-shadow:0 0 50px #ffffff}
+.left,.right{width:60px;top:0;backface-visibility:hidden}
+.left {left:0;border-left-width:5px; transform:translate3d(1px,0,-60px) rotateY(-90deg);transform-origin:0%}
+.right{right:0;border-right-width:5px;transform:translate3d(-1px,0,-60px) rotateY(90deg);transform-origin:100%}
+</style>
+</head>
+<body>
+
+<div class="shell">
+  <div class="shell_body">
+    <div class="shell_slider" id="slider">
+      <!-- 真实内容区（JS 会克隆首尾） -->
+      <div class="item"><div class="frame"><div class="box front"><h1>2014</h1><span>-In 2014 I reached 13-</span></div><div class="box left"></div><div class="box right"></div></div></div>
+      <div class="item"><div class="frame"><div class="box front"><h1>2015</h1><span>-In 2015 I reached 14-</span></div><div class="box left"></div><div class="box right"></div></div></div>
+      <div class="item"><div class="frame"><div class="box front"><h1>2016</h1><span>-In 2016 I reached 15-</span></div><div class="box left"></div><div class="box right"></div></div></div>
+      <div class="item"><div class="frame"><div class="box front"><h1>2017</h1><span>-In 2017 I reached 16-</span></div><div class="box left"></div><div class="box right"></div></div></div>
+      <div class="item"><div class="frame"><div class="box front"><h1>2018</h1><span>-In 2018 I reached 17-</span></div><div class="box left"></div><div class="box right"></div></div></div>
+      <div class="item"><div class="frame"><div class="box front"><h1>2019</h1><span>-In 2019 I reached 18-</span></div><div class="box left"></div><div class="box right"></div></div></div>
+      <div class="item"><div class="frame"><div class="box front"><h1>2020</h1><span>-In 2020 I reached 19-</span></div><div class="box left"></div><div class="box right"></div></div></div>
+      <div class="item"><div class="frame"><div class="box front"><h1>2021</h1><span>-In 2021 I reached 20-</span></div><div class="box left"></div><div class="box right"></div></div></div>
+      <div class="item"><div class="frame"><div class="box front"><h1>2022</h1><span>-In 2022 I reached 21-</span></div><div class="box left"></div><div class="box right"></div></div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* --------- 绑定背景图 --------- */
+document.querySelectorAll(".item").forEach((item, idx) => {
+  ["front","left","right"].forEach(cls=>{
+    item.querySelector("."+cls).style.backgroundImage=
+      `url(./img/${String(idx+1).padStart(2,"0")}.jpg)`;
+  });
+});
+
+/* --------- 核心逻辑 --------- */
+(function(){
+  const slider   = document.getElementById("slider");
+  let   items    = Array.from(slider.children); // 初始真实节点
+  const cloneHead= items[0].cloneNode(true);
+  const cloneTail= items[items.length-1].cloneNode(true);
+
+  slider.appendChild(cloneHead);               // 尾部加首克隆
+  slider.insertBefore(cloneTail, items[0]);    // 首部加尾克隆
+  items = Array.from(slider.children);         // 更新包含克隆的节点列表
+
+  /* 尺寸计算 */
+  let w, h, margin = 20, index = 1;            // index=1 对应首个“真实”节点
+  function setSize(){
+    w = Math.max(window.innerWidth*0.2, 275);
+    h = window.innerHeight*0.5;
+    slider.style.width = w*items.length + "px";
+    items.forEach(el=>{ el.style.width = w-margin*2 + "px"; el.style.height = h+"px";});
+    jump(index,false);                         // 尺寸变化后立即定位
+  }
+
+  /* 立即定位(是否动画) */
+  function jump(i,animate=true){
+    index=i;
+    if(!animate){slider.style.transition="none";}
+    slider.style.transform=`translate3d(${(-index*w + w/2 + innerWidth/2)}px,0,0)`;
+    if(!animate){ /* 强制回流让瞬移生效后再恢复动画 */
+      void slider.offsetWidth; slider.style.transition="transform 1s ease-in-out";
+    }
+    /* 调整 3D 角度与背景 */
+    Array.from(slider.children).forEach((it,k)=>{
+      const frame=it.querySelector(".frame");
+      if(k===index){frame.style.transform="perspective(1200px)";}
+      else{frame.style.transform=`perspective(1200px) rotateY(${k<index?40:-40}deg)`;}
+    });
+    document.body.style.backgroundImage=
+      slider.children[index].querySelector(".front").style.backgroundImage;
+  }
+
+  /* 触摸滑动 */
+  let startX=0, diff=0, threshold=50;
+  slider.addEventListener("touchstart",e=>startX=e.touches[0].clientX,{passive:true});
+  slider.addEventListener("touchmove", e=>diff=e.touches[0].clientX-startX,{passive:true});
+  slider.addEventListener("touchend", ()=>{
+    if(Math.abs(diff)>threshold){
+      diff>0 ? jump(index-1) : jump(index+1);
+    }
+    diff=0;
+  });
+
+  /* 无缝循环关键：动画结束后若在克隆页就瞬移到真实页 */
+  slider.addEventListener("transitionend",()=>{
+    if(index===0){          // 说明跳到了最前面的“尾克隆”，瞬移到真尾
+      jump(items.length-2,false);
+    }else if(index===items.length-1){
+      jump(1,false);        // 说明跳到了最后面的“首克隆”
+    }
+  });
+
+  window.addEventListener("resize",setSize);
+  window.addEventListener("orientationchange",setSize);
+
+  /* 初始化 */
+  setSize();
+  jump(1,false);            // 初始展示第一个真实节点
+})();
+</script>
+</body>
+</html>
