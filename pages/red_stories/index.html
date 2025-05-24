@@ -32,25 +32,6 @@
       transition: background-image 0.7s ease-in-out;
     }
 
-    /* 竖屏时提示横屏并隐藏主体内容 */
-    @media (orientation: portrait) {
-      body::before {
-        content: "建议将手机横屏观看";
-        position: fixed;
-        inset: 0;
-        background: #000;
-        color: #fff;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-size: 24px;
-        z-index: 999999;
-      }
-      .shell {
-        display: none;
-      }
-    }
-
     .shell {
       position: relative;
       display: flex;
