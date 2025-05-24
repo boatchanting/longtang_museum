@@ -3,9 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no" />
-  <title>故事</title>
+  <title>西王花园弄堂博物馆 | 红色故事</title>
   <!-- 代码学习自 山羊の前端小窝，做了微调 -->
-  <!-- 尽量提示浏览器横屏显示（并非所有浏览器都支持）-->
   <meta name="screen-orientation" content="landscape" />
   <meta name="x5-orientation" content="landscape" />
 
@@ -90,14 +89,20 @@
       transform-style: preserve-3d;
     }
 
+
+    :root {
+      --grad-start: #f6e7cd;
+      --grad-end: #dfc295;
+    }
     .box h1,
     .box span {
-      color: #fff;
-      transform: translateZ(20px);
+      background: linear-gradient(to right, var(--grad-start), var(--grad-end));
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
-
     .box h1 {
-      font-size: 100px;
+      font-size: 40px;
       text-shadow: 0 0 30px #1f05b4;
     }
 
@@ -142,171 +147,131 @@
   <div class="shell">
     <div class="shell_body">
       <div class="shell_slider">
-        <!-- 根据需要增删 item，这里示例 9 张 -->
-        <div class="item">
+        <div class="item" data-img="../../img/帖子1-1.jpeg" data-link="red-story-1.html">
           <div class="frame">
-            <div class="box front"><h1>2014</h1><span>-In 2014 I reached the age of 13-</span></div>
+            <div class="box front"><h1>西王花园里的地下印刷所</h1></div>
             <div class="box left"></div>
             <div class="box right"></div>
           </div>
         </div>
-        <div class="item">
+
+        <div class="item" data-img="../../img/帖子1-2.jpeg" data-link="red-story-1.html">
           <div class="frame">
-            <div class="box front"><h1>2015</h1><span>-In 2015 I reached the age of 14-</span></div>
+            <div class="box front"><h1>红色故事 2</h1></div>
             <div class="box left"></div>
             <div class="box right"></div>
           </div>
         </div>
-        <div class="item">
+
+        <div class="item" data-img=" ../../img/帖子1-3.jpeg" data-link="red-story-1.html">
           <div class="frame">
-            <div class="box front"><h1>2016</h1><span>-In 2016 I reached the age of 15-</span></div>
+            <div class="box front"><h1>红色故事 3</h1></div>
             <div class="box left"></div>
             <div class="box right"></div>
           </div>
         </div>
-        <div class="item">
-          <div class="frame">
-            <div class="box front"><h1>2017</h1><span>-In 2017 I reached the age of 16-</span></div>
-            <div class="box left"></div>
-            <div class="box right"></div>
-          </div>
-        </div>
-        <div class="item">
-          <div class="frame">
-            <div class="box front"><h1>2018</h1><span>-In 2018 I reached the age of 17-</span></div>
-            <div class="box left"></div>
-            <div class="box right"></div>
-          </div>
-        </div>
-        <div class="item">
-          <div class="frame">
-            <div class="box front"><h1>2019</h1><span>-In 2019 I reached the age of 18-</span></div>
-            <div class="box left"></div>
-            <div class="box right"></div>
-          </div>
-        </div>
-        <div class="item">
-          <div class="frame">
-            <div class="box front"><h1>2020</h1><span>-In 2020 I reached the age of 19-</span></div>
-            <div class="box left"></div>
-            <div class="box right"></div>
-          </div>
-        </div>
-        <div class="item">
-          <div class="frame">
-            <div class="box front"><h1>2021</h1><span>-In 2021 I reached the age of 20-</span></div>
-            <div class="box left"></div>
-            <div class="box right"></div>
-          </div>
-        </div>
-        <div class="item">
-          <div class="frame">
-            <div class="box front"><h1>2022</h1><span>-In 2022 I reached the age of 21-</span></div>
-            <div class="box left"></div>
-            <div class="box right"></div>
-          </div>
-        </div>
+        <!-- ✅ 继续添加更多 item ... -->
+
       </div>
     </div>
   </div>
 
-  <script>
-  /* === 轮播初始化 === */
-  document.querySelectorAll(".item").forEach((item, idx) => {
-    ["front", "left", "right"].forEach(cls => {
-      item.querySelector("." + cls).style.backgroundImage =
-        "url(./img/" + String(idx + 1).padStart(2, "0") + ".jpg)";
+<script>
+/* ========= 1. 先把每张图贴到三面盒子 ========= */
+document.querySelectorAll(".item").forEach(item => {
+  const img = item.dataset.img;                              // 读取 data-img
+  ["front","left","right"].forEach(cls => {
+    item.querySelector("." + cls).style.backgroundImage = `url(${img})`;
+  });
+});
+
+/* ========= 2. 轮播逻辑：在原代码基础上改了数据源 ========= */
+(function () {
+  "use strict";
+
+  const shell     = document.querySelector(".shell");
+  const slider    = shell.querySelector(".shell_slider");
+  const items     = [...shell.querySelectorAll(".item")];
+  const N         = items.length;
+
+  /* 复制首尾，形成 N+2 结构 */
+  const firstClone = items[0].cloneNode(true);
+  const lastClone  = items[N-1].cloneNode(true);
+  slider.appendChild(firstClone);
+  slider.insertBefore(lastClone, items[0]);
+  const allItems  = [...slider.querySelectorAll(".item")];
+
+  /* 变量 */
+  let width, height, margin = 20;
+  let currIndex = 1;                         // 当前可视索引（首尾加了克隆）
+
+  /* 调整尺寸 */
+  function resize() {
+    width  = Math.max(window.innerWidth * 0.2, 275);
+    height = window.innerHeight * 0.5;
+    slider.style.width = width * allItems.length + "px";
+    allItems.forEach(it => {
+      it.style.width = width - margin*2 + "px";
+      it.style.height = height + "px";
+    });
+    jumpTo(currIndex, false);
+  }
+
+  /* 核心跳转 */
+  function jumpTo(index, animate=true) {
+    slider.style.transition = animate ? "transform 1s ease-in-out" : "none";
+    slider.style.transform  =
+      `translate3d(${(index * -width) + width/2 + window.innerWidth/2}px,0,0)`;
+    currIndex = index;
+
+    /* 选中效果 & 背景 */
+    allItems.forEach((it,i)=>{
+      const frame = it.querySelector(".frame");
+      if(i===index){
+        it.classList.add("item--active");
+        frame.style.transform = "perspective(1200px)";
+      }else{
+        it.classList.remove("item--active");
+        frame.style.transform =
+          `perspective(1200px) rotateY(${i<index?40:-40}deg)`;
+      }
+    });
+    const real = allItems[index===0?N : index===N+1?1 : index];
+    document.body.style.backgroundImage =
+      real.querySelector(".front").style.backgroundImage;
+  }
+
+  /* 动画收尾：若落在克隆节点就瞬移到真节点 */
+  slider.addEventListener("transitionend", ()=>{
+    if(currIndex===0)       jumpTo(N,false);
+    else if(currIndex===N+1) jumpTo(1,false);
+  });
+
+  /* 触屏滑动 */
+  let startX=0, diff=0;
+  slider.addEventListener("touchstart",e=>startX=e.touches[0].clientX,{passive:true});
+  slider.addEventListener("touchmove",e=>diff=e.touches[0].clientX-startX,{passive:true});
+  slider.addEventListener("touchend",()=>{
+    if(Math.abs(diff)>50) jumpTo(diff>0?currIndex-1:currIndex+1,true);
+    diff=0;
+  },{passive:true});
+
+  /* 点击整张图片即可跳转 */
+  allItems.forEach(it=>{
+    it.style.cursor="pointer";
+    it.addEventListener("click",()=>{
+      const url = it.dataset.link;
+      if(url) window.location.href = url;
     });
   });
 
-  (function () {
-    "use strict";
-
-    const shell   = document.querySelector(".shell");
-    const slider  = shell.querySelector(".shell_slider");
-    const items   = [...shell.querySelectorAll(".item")];   // 真正的 n 项
-    const N       = items.length;
-
-    /* --- 1. 复制首尾，形成 N+2 结构 --- */
-    const firstClone = items[0].cloneNode(true);
-    const lastClone  = items[N - 1].cloneNode(true);
-    slider.appendChild(firstClone);
-    slider.insertBefore(lastClone, items[0]);
-    const allItems = [...slider.querySelectorAll(".item")]; // N+2
-
-    /* --- 2. 变量 --- */
-    let width, height, totalWidth, margin = 20;
-    let realIndex = 0;          // 0 ~ N-1
-    let currIndex = 1;          // 1 ~ N  (因为 0 是 lastClone)
-
-    /* --- 3. 大小计算 --- */
-    function resize() {
-      width      = Math.max(window.innerWidth * 0.2, 275);
-      height     = window.innerHeight * 0.5;
-      totalWidth = width * allItems.length;
-      slider.style.width = totalWidth + "px";
-
-      allItems.forEach(it => {
-        it.style.width  = width - margin * 2 + "px";
-        it.style.height = height + "px";
-      });
-
-      jumpTo(currIndex, false);     // 立即定位
-    }
-
-    /* --- 4. 实际移动 --- */
-    function jumpTo(index, animate = true) {
-      slider.style.transition = animate ? "transform 1s ease-in-out" : "none";
-      slider.style.transform  =
-        "translate3d(" +
-        ((index * -width) + width / 2 + window.innerWidth / 2) +
-        "px, 0, 0)";
-
-      currIndex = index;
-
-      /* 更新 active 和背景 */
-      allItems.forEach((item, i) => {
-        const box = item.querySelector(".frame");
-        if (i === index) {
-          item.classList.add("item--active");
-          box.style.transform = "perspective(1200px)";
-        } else {
-          item.classList.remove("item--active");
-          box.style.transform =
-            "perspective(1200px) rotateY(" + (i < index ? 40 : -40) + "deg)";
-        }
-      });
-      const trueItem =
-        allItems[index === 0 ? N : index === N + 1 ? 1 : index];
-      document.body.style.backgroundImage =
-        trueItem.querySelector(".front").style.backgroundImage;
-    }
-
-    /* --- 5. 动画结束：若落在克隆节点立即跳回 --- */
-    slider.addEventListener("transitionend", () => {
-      if (currIndex === 0)        jumpTo(N, false);   // 跳到真尾
-      else if (currIndex === N + 1) jumpTo(1, false); // 跳到真头
-    });
-
-    /* --- 6. 手势滑动 --- */
-    let startX = 0, diffX = 0, threshold = 50;
-    slider.addEventListener("touchstart", e => (startX = e.touches[0].clientX), {passive:true});
-    slider.addEventListener("touchmove",  e => (diffX = e.touches[0].clientX - startX), {passive:true});
-    slider.addEventListener("touchend", () => {
-      if (Math.abs(diffX) > threshold) {
-        jumpTo(diffX > 0 ? currIndex - 1 : currIndex + 1, true);
-      }
-      diffX = 0;
-    });
-
-    window.addEventListener("resize", resize);
-    window.addEventListener("orientationchange", resize);
-
-    /* --- 7. 初始化 --- */
-    resize();
-    jumpTo(5, false);   // 内容上的第一张（currIndex=1, 对应真实索引0）
-  })();
+  /* 初始化 */
+  window.addEventListener("resize", resize);
+  window.addEventListener("orientationchange", resize);
+  resize();          // 第一次布局
+  jumpTo(1,false);   // 显示真正第一张
+})();
 </script>
-
 </body>
+
 </html>
